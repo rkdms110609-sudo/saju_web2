@@ -1,0 +1,465 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- AI 사주 리포트 데모: 만세력 엔진(정밀 계산) + Claude 4단계 해석 -->
+<style>
+  :root {
+    --ink: #161228;
+    --ink-2: #1F1A38;
+    --ink-3: #2B2450;
+    --paper: #F1EDFB;
+    --paper-dim: #A79FCB;
+    --seal: #D95D82;
+    --wood: #6FC492; --fire: #F0868C; --earth: #F0C97F; --metal: #C9CEDD; --water: #7FA0E0;
+    --line: rgba(240,237,251,0.13);
+  }
+  .saju-app { background: var(--ink); background-image: radial-gradient(circle, rgba(240,201,127,0.25) 1px, transparent 1.9px), radial-gradient(circle, rgba(184,167,233,0.18) 1px, transparent 1.6px); background-size: 210px 210px, 150px 150px; background-position: 0 0, 70px 95px; color: var(--paper); font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; min-height: 100vh; padding: 28px 16px 64px; box-sizing: border-box; }
+  .saju-app * { box-sizing: border-box; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  .masthead { text-align: center; margin-bottom: 30px; }
+  .masthead .seal-mark { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--earth); color: var(--earth); box-shadow: 0 0 18px rgba(240,201,127,0.25); font-family: 'Nanum Myeongjo', 'Noto Serif KR', serif; font-size: 20px; font-weight: 800; margin-bottom: 12px; letter-spacing: 0; }
+  .masthead .brand { font-size: 11px; letter-spacing: 5px; color: var(--earth); margin: 0 0 8px; }
+  .masthead h1 { font-family: 'Nanum Myeongjo', 'Noto Serif KR', serif; font-size: 26px; font-weight: 800; margin: 0 0 6px; letter-spacing: 6px; }
+  .masthead p { color: var(--paper-dim); font-size: 13px; margin: 0; letter-spacing: 1px; }
+
+  .card { background: var(--ink-2); border: 1px solid var(--line); border-radius: 18px; padding: 22px; margin-bottom: 18px; }
+  .card h2 { font-family: 'Nanum Myeongjo', 'Noto Serif KR', serif; font-size: 15px; font-weight: 700; margin: 0 0 16px; color: var(--paper); display: flex; align-items: center; gap: 8px; }
+  .card h2::before { content: '✦'; color: var(--earth); font-size: 12px; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .form-grid .full { grid-column: 1 / -1; }
+  label.f { display: block; font-size: 11px; color: var(--paper-dim); margin-bottom: 5px; letter-spacing: 1px; }
+  input, select { width: 100%; background: var(--ink); border: 1px solid var(--line); color: var(--paper); padding: 10px 12px; border-radius: 12px; font-size: 15px; font-family: inherit; }
+  input:focus, select:focus { outline: 2px solid var(--earth); outline-offset: -1px; }
+  .check-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--paper-dim); margin-top: 4px; }
+  .check-row input { width: auto; }
+
+  .btn { width: 100%; padding: 15px; background: var(--seal); color: #fff; border: none; border-radius: 999px; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 3px; font-family: 'Nanum Myeongjo', serif; margin-top: 14px; }
+  .btn:hover { filter: brightness(1.1); }
+  .btn:disabled { background: var(--ink-3); color: var(--paper-dim); cursor: default; }
+  .btn.secondary { background: transparent; border: 1px solid var(--seal); color: var(--seal); border-radius: 999px; }
+
+  /* 명식표 */
+  .myeongsik { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .pillar { background: var(--ink); border: 1px solid var(--line); border-radius: 14px; padding: 12px 6px 10px; text-align: center; }
+  .pillar .pos { font-size: 11px; color: var(--paper-dim); letter-spacing: 2px; margin-bottom: 8px; }
+  .pillar .hanja { font-family: 'Nanum Myeongjo', 'Noto Serif KR', serif; font-size: 34px; line-height: 1.15; font-weight: 800; }
+  .pillar .hanja div { padding: 2px 0; }
+  .pillar .kr { font-size: 11px; color: var(--paper-dim); margin-top: 6px; }
+  .pillar .tg { font-size: 10px; margin-top: 6px; line-height: 1.5; color: var(--paper-dim); }
+  .el-목 { color: var(--wood); } .el-화 { color: var(--fire); } .el-토 { color: var(--earth); } .el-금 { color: var(--metal); } .el-수 { color: var(--water); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .chip { font-size: 11px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--paper-dim); }
+  .chip b { color: var(--paper); font-weight: 600; }
+
+  .ebar { display: flex; gap: 4px; margin-top: 14px; height: 8px; border-radius: 999px; overflow: hidden; }
+  .ebar div { height: 100%; }
+  .elegend { display: flex; gap: 12px; margin-top: 8px; font-size: 11px; color: var(--paper-dim); flex-wrap: wrap; }
+
+  /* 해석 파트 */
+  .part { border-left: 2px solid var(--ink-3); padding: 0 0 0 16px; margin: 22px 0; }
+  .part.active { border-left-color: var(--seal); }
+  .part .ptitle { font-family: 'Nanum Myeongjo', serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; margin-bottom: 10px; display: flex; gap: 10px; align-items: baseline; }
+  .part .ptitle .num { color: var(--seal); font-size: 12px; }
+  .part .pbody { font-size: 14.5px; line-height: 1.85; color: var(--paper); white-space: pre-wrap; word-break: keep-all; }
+  .part .pbody strong { color: var(--earth); font-weight: 700; }
+  .loading-line { display: flex; gap: 8px; align-items: center; color: var(--paper-dim); font-size: 13px; padding: 8px 0; }
+  .dot { width: 6px; height: 6px; background: var(--seal); border-radius: 50%; animation: pulse 1s infinite alternate; }
+  @keyframes pulse { from { opacity: 0.3; } to { opacity: 1; } }
+  .err { color: var(--fire); font-size: 13px; padding: 12px; border: 1px solid var(--fire); border-radius: 12px; margin-top: 10px; }
+  /* 풀이 중 대기 화면 */
+  .progress-list { padding: 6px 0; }
+  .prog-item { display: flex; align-items: center; gap: 12px; padding: 12px 4px; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--paper-dim); }
+  .prog-item:last-child { border-bottom: none; }
+  .prog-item .st { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none; font-size: 12px; border: 1px solid var(--line); }
+  .prog-item.working { color: var(--paper); }
+  .prog-item.working .st { border-color: var(--seal); }
+  .prog-item.working .st::after { content: ''; width: 8px; height: 8px; background: var(--seal); border-radius: 50%; animation: pulse 0.9s infinite alternate; }
+  .prog-item.done { color: var(--paper); }
+  .prog-item.done .st { background: var(--seal); border-color: var(--seal); color: #fff; }
+  .prog-item.done .st::after { content: '✓'; }
+  .prog-hint { text-align: center; font-size: 12px; color: var(--paper-dim); margin-top: 16px; line-height: 1.7; }
+  .hidden { display: none; }
+  .notice { font-size: 11.5px; color: var(--paper-dim); line-height: 1.6; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  @media (max-width: 480px) { .form-grid { grid-template-columns: repeat(2, 1fr); } .pillar .hanja { font-size: 26px; } }
+</style>
+
+<div class="saju-app">
+  <div class="wrap">
+    <div class="masthead">
+      <div class="seal-mark">命</div>
+      <h1>사주별</h1>
+      <p>내 사주에 뜬 별을 읽어드려요 ✧ 정밀 만세력 기반 AI 풀이</p>
+      <p style="margin-top:14px;font-size:13px;line-height:2.2"><a href="saju.html" style="color:var(--seal);text-decoration:none;border-bottom:1px solid var(--seal)">命 정통사주 심층</a> &nbsp; <a href="newyear.html" style="color:var(--earth);text-decoration:none;border-bottom:1px solid var(--earth)">🧧 신년운세</a> &nbsp; <a href="love.html" style="color:var(--fire);text-decoration:none;border-bottom:1px solid var(--fire)">💘 연애운</a> &nbsp; <a href="reunion.html" style="color:var(--fire);text-decoration:none;border-bottom:1px solid var(--fire)">🕊 재회운</a> &nbsp; <a href="career.html" style="color:var(--water);text-decoration:none;border-bottom:1px solid var(--water)">💼 이직·직장운</a> &nbsp; <a href="study.html" style="color:var(--water);text-decoration:none;border-bottom:1px solid var(--water)">📚 학업·시험운</a> &nbsp; <a href="pass.html" style="color:var(--water);text-decoration:none;border-bottom:1px solid var(--water)">📝 합격운</a> &nbsp; <a href="money.html" style="color:var(--earth);text-decoration:none;border-bottom:1px solid var(--earth)">💰 재물운</a> &nbsp; <a href="invest.html" style="color:var(--earth);text-decoration:none;border-bottom:1px solid var(--earth)">📈 투자운</a></p>
+    </div>
+
+    <!-- 입력 -->
+    <div class="card" id="inputCard">
+      <h2>사주 정보 입력</h2>
+      <div class="form-grid">
+        <div><label class="f">이름 (부를 호칭)</label><input id="uname" type="text" placeholder="지민" maxlength="12"></div>
+        <div><label class="f">성별</label>
+          <select id="gender"><option value="F">여성</option><option value="M">남성</option></select></div>
+        <div><label class="f">출생년 (양력)</label><input id="y" type="number" placeholder="1992" min="1900" max="2026"></div>
+        <div><label class="f">월</label><input id="m" type="number" placeholder="7" min="1" max="12"></div>
+        <div><label class="f">일</label><input id="d" type="number" placeholder="8" min="1" max="31"></div>
+        <div><label class="f">시 (0-23)</label><input id="hh" type="number" placeholder="8" min="0" max="23"></div>
+        <div><label class="f">분</label><input id="mm" type="number" placeholder="20" min="0" max="59" value="0"></div>
+        <div class="full check-row"><input id="unknownTime" type="checkbox" onchange="toggleUnknownTime()"><label for="unknownTime">태어난 시간을 몰라요 (00:00 기준으로 계산)</label></div>
+        <div class="full check-row"><input id="lmt" type="checkbox" checked><label for="lmt">진태양시 보정 적용 (한국 출생, -30분)</label></div>
+      </div>
+      <button class="btn" onclick="runCalc()">내 사주 펼치기 ✦</button>
+    </div>
+
+    <!-- 명식 결과 -->
+    <div class="card hidden" id="resultCard">
+      <h2>사주 원국 <span id="birthLabel" style="font-weight:400;font-size:12px;color:var(--paper-dim);margin-left:auto"></span></h2>
+      <div class="myeongsik" id="myeongsik"></div>
+      <div class="ebar" id="ebar"></div>
+      <div class="elegend" id="elegend"></div>
+      <div class="chips" id="chips"></div>
+      <button class="btn" id="aiBtn" onclick="runInterpretation()">무 료 요 약 풀 이</button>
+    </div>
+
+    <!-- AI 해석 -->
+    <div class="card hidden" id="aiCard">
+      <h2>사주 요약 리포트 (무료)</h2>
+      <div id="parts"></div>
+      <div class="notice">본 풀이는 명리학 이론에 근거한 참고용 해석이며, 중요한 결정은 본인의 판단과 전문가 상담을 병행하시기 바랍니다. 투자 관련 내용은 재물운의 흐름 해석일 뿐 특정 투자 권유가 아닙니다.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 만세력 엔진 (브라우저 버전) — 절기 천문계산 + 사주팔자 + 심층분석
+// ============================================================
+const STEMS=['갑','을','병','정','무','기','경','신','임','계'];
+const BRANCHES=['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const STEMS_HANJA=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const BRANCHES_HANJA=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const STEM_ELEMENT=[0,0,1,1,2,2,3,3,4,4];
+const BRANCH_ELEMENT=[4,2,0,0,2,1,1,2,3,3,2,4];
+const STEM_YANG=[true,false,true,false,true,false,true,false,true,false];
+const ELEMENTS=['목','화','토','금','수'];
+const EL_COLOR={목:'var(--wood)',화:'var(--fire)',토:'var(--earth)',금:'var(--metal)',수:'var(--water)'};
+const HIDDEN_STEMS={0:[9],1:[5,9,7],2:[0,2,4],3:[1],4:[4,1,9],5:[2,4,6],6:[3,5],7:[5,1,3],8:[6,4,8],9:[7],10:[4,3,7],11:[8,0]};
+const TEN_GODS=[['비견','겁재'],['식신','상관'],['편재','정재'],['편관','정관'],['편인','정인']];
+
+function toJD(y,m,d,h=0){if(m<=2){y-=1;m+=12;}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5+h/24;}
+function sunLon(jd){const T=(jd-2451545)/36525;const L0=280.46646+36000.76983*T+0.0003032*T*T;const M=357.52911+35999.05029*T-0.0001537*T*T;const Mr=M*Math.PI/180;const C=(1.914602-0.004817*T-0.000014*T*T)*Math.sin(Mr)+(0.019993-0.000101*T)*Math.sin(2*Mr)+0.000289*Math.sin(3*Mr);const o=125.04-1934.136*T;const ap=L0+C-0.00569-0.00478*Math.sin(o*Math.PI/180);return((ap%360)+360)%360;}
+function findTerm(year,lon){let doy;if(lon>=270)doy=((lon-270)%360)*1.014-10;else doy=80+lon*1.014;let jd=toJD(year,1,1)+doy;for(let i=0;i<50;i++){let diff=lon-sunLon(jd);while(diff>180)diff-=360;while(diff<-180)diff+=360;if(Math.abs(diff)<1e-7)break;jd+=diff/0.9856473;}return jd;}
+const JEOL_LON=[315,345,15,45,75,105,135,165,195,225,255,285];
+const JEOL_NAMES=['입춘','경칩','청명','입하','망종','소서','입추','백로','한로','입동','대설','소한'];
+const JEOL_MB=[2,3,4,5,6,7,8,9,10,11,0,1];
+
+function calculateSaju({year,month,day,hour=null,minute=0,applyLmt=true}){
+  const hourKnown=hour!==null&&hour!==undefined;
+  let cy=year,cm=month,cd=day,chh=hourKnown?hour:12,cmm=minute;
+  if(hourKnown&&applyLmt){const t=new Date(Date.UTC(year,month-1,day,hour,minute));t.setUTCMinutes(t.getUTCMinutes()-30);cy=t.getUTCFullYear();cm=t.getUTCMonth()+1;cd=t.getUTCDate();chh=t.getUTCHours();cmm=t.getUTCMinutes();}
+  const jdB=toJD(cy,cm,cd,chh+cmm/60-9);
+  let sy=cy;if(jdB<findTerm(cy,315))sy=cy-1;
+  const ys=((sy-4)%10+10)%10, yb=((sy-4)%12+12)%12;
+  let mi=-1,jeol=null;
+  for(let i=0;i<12;i++){const ty=i===11?sy+1:sy;const jt=findTerm(ty,JEOL_LON[i]);if(jdB>=jt){mi=i;jeol=JEOL_NAMES[i];}}
+  const mb=JEOL_MB[mi], ms=([2,4,6,8,0][ys%5]+mi)%10;
+  const jdn=Math.floor(toJD(cy,cm,cd,12-9)+0.5);
+  const dg=((jdn+49)%60+60)%60, ds=dg%10, db=dg%12;
+  let hs=null,hb=null,yaja=false;
+  if(hourKnown){hb=Math.floor(((chh+1)%24)/2)%12;yaja=chh===23;const sfh=yaja?(ds+1)%10:ds;hs=([0,2,4,6,8][sfh%5]+hb)%10;}
+  const ec=[0,0,0,0,0];const ps=[[ys,yb],[ms,mb],[ds,db]];if(hourKnown)ps.push([hs,hb]);
+  for(const[s,b]of ps){ec[STEM_ELEMENT[s]]++;ec[BRANCH_ELEMENT[b]]++;}
+  function tg(t){if(t===null)return null;const de=STEM_ELEMENT[ds],te=STEM_ELEMENT[t];let r;if(te===de)r=0;else if(te===(de+1)%5)r=1;else if(te===(de+2)%5)r=2;else if(te===(de+3)%5)r=3;else r=4;return TEN_GODS[r][STEM_YANG[t]===STEM_YANG[ds]?0:1];}
+  function fp(s,b){if(s===null)return null;return{si:s,bi:b,stem:STEMS[s],branch:BRANCHES[b],hanja:STEMS_HANJA[s]+BRANCHES_HANJA[b],korean:STEMS[s]+BRANCHES[b],stemEl:ELEMENTS[STEM_ELEMENT[s]],branchEl:ELEMENTS[BRANCH_ELEMENT[b]],stemTG:tg(s),branchTG:tg(HIDDEN_STEMS[b][HIDDEN_STEMS[b].length-1]),hidden:HIDDEN_STEMS[b].map(h=>STEMS[h])};}
+  return{correctedTime:hourKnown?`${cy}-${String(cm).padStart(2,'0')}-${String(cd).padStart(2,'0')} ${String(chh).padStart(2,'0')}:${String(cmm).padStart(2,'0')}`:'시간 미상',sajuYear:sy,jeol,yaja,pillars:{year:fp(ys,yb),month:fp(ms,mb),day:fp(ds,db),hour:hourKnown?fp(hs,hb):null},dayMaster:{stem:STEMS[ds],element:ELEMENTS[STEM_ELEMENT[ds]],yang:STEM_YANG[ds]},elementCount:Object.fromEntries(ELEMENTS.map((e,i)=>[e,ec[i]]))};
+}
+
+// ---- 심층 분석 ----
+const PN={year:'년주',month:'월주',day:'일주',hour:'시주'};
+const CG_HAP={'05':'토','16':'금','27':'수','38':'목','49':'화'};
+const CG_CHUNG=[[0,6],[1,7],[2,8],[3,9]];
+const YUKHAP={'01':'토','211':'목','310':'화','49':'금','58':'수','67':'화'};
+const JJ_CHUNG=[[0,6],[1,7],[2,8],[3,9],[4,10],[5,11]];
+const SAMHAP=[{b:[2,6,10],e:'화',n:'인오술'},{b:[5,9,1],e:'금',n:'사유축'},{b:[8,0,4],e:'수',n:'신자진'},{b:[11,3,7],e:'목',n:'해묘미'}];
+const BANGHAP=[{b:[2,3,4],e:'목',n:'인묘진'},{b:[5,6,7],e:'화',n:'사오미'},{b:[8,9,10],e:'금',n:'신유술'},{b:[11,0,1],e:'수',n:'해자축'}];
+const HYEONG=[{b:[2,5,8],n:'인사신 삼형(지세지형)'},{b:[1,10,7],n:'축술미 삼형(무은지형)'},{b:[0,3],n:'자묘형(무례지형)'}];
+const JAHYEONG=[4,6,9,11];
+const PA=[[0,9],[1,4],[2,11],[3,6],[5,8],[10,7]];
+const HAE=[[0,7],[1,6],[2,5],[3,4],[8,11],[9,10]];
+
+function findRelations(saju){
+  const en=Object.entries(saju.pillars).filter(([,p])=>p);
+  const st=en.map(([k,p])=>({pos:PN[k],i:p.si})), br=en.map(([k,p])=>({pos:PN[k],i:p.bi}));
+  const rel={천간합:[],천간충:[],지지육합:[],지지충:[],삼합:[],방합:[],형:[],파:[],해:[]};
+  for(let i=0;i<st.length;i++)for(let j=i+1;j<st.length;j++){const a=st[i],b=st[j];const key=[Math.min(a.i,b.i),Math.max(a.i,b.i)].join('');
+    if(Math.abs(a.i-b.i)===5)rel.천간합.push(`${a.pos} ${STEMS[a.i]}-${b.pos} ${STEMS[b.i]} 합(합화 ${CG_HAP[key]})`);
+    if(CG_CHUNG.some(([x,y])=>(a.i===x&&b.i===y)||(a.i===y&&b.i===x)))rel.천간충.push(`${a.pos} ${STEMS[a.i]}-${b.pos} ${STEMS[b.i]} 충`);}
+  const pc=(list,out,lb)=>{for(let i=0;i<br.length;i++)for(let j=i+1;j<br.length;j++){const a=br[i],b=br[j];if(list.some(([x,y])=>(a.i===x&&b.i===y)||(a.i===y&&b.i===x)))out.push(`${a.pos} ${BRANCHES[a.i]}-${b.pos} ${BRANCHES[b.i]} ${lb}`);}};
+  for(let i=0;i<br.length;i++)for(let j=i+1;j<br.length;j++){const a=br[i],b=br[j];const h=YUKHAP[`${a.i}${b.i}`]||YUKHAP[`${b.i}${a.i}`];if(h)rel.지지육합.push(`${a.pos} ${BRANCHES[a.i]}-${b.pos} ${BRANCHES[b.i]} 육합(합화 ${h})`);}
+  pc(JJ_CHUNG,rel.지지충,'충');pc(PA,rel.파,'파');pc(HAE,rel.해,'해');
+  const bs=br.map(b=>b.i);
+  for(const g of SAMHAP){const p=g.b.filter(b=>bs.includes(b));if(p.length===3)rel.삼합.push(`${g.n} 삼합 완성(${g.e}국)`);else if(p.length===2&&p.includes(g.b[1]))rel.삼합.push(`${p.map(b=>BRANCHES[b]).join('')} 반합(${g.e} 기운)`);}
+  for(const g of BANGHAP){if(g.b.filter(b=>bs.includes(b)).length===3)rel.방합.push(`${g.n} 방합 완성(${g.e}국)`);}
+  for(const h of HYEONG){const p=h.b.filter(b=>bs.includes(b));if(h.b.length===3&&p.length>=2)rel.형.push(`${p.map(b=>BRANCHES[b]).join('')} ${p.length===3?h.n:'(부분)형-'+h.n}`);else if(h.b.length===2&&p.length===2)rel.형.push(h.n);}
+  for(const j of JAHYEONG){if(bs.filter(b=>b===j).length>=2)rel.형.push(`${BRANCHES[j]}${BRANCHES[j]} 자형`);}
+  return Object.fromEntries(Object.entries(rel).filter(([,v])=>v.length));
+}
+
+const CHEONEUL={0:[1,7],4:[1,7],6:[1,7],1:[0,8],5:[0,8],2:[11,9],3:[11,9],7:[2,6],8:[5,3],9:[5,3]};
+const SG={2:0,6:0,10:0,5:1,9:1,1:1,8:2,0:2,4:2,11:3,3:3,7:3};
+const DOHWA=[3,6,9,0],YEOKMA=[8,11,2,5],HWAGAE=[10,1,4,7];
+const GWAEGANG=['경진','경술','임진','무술'],BAEKHO=['갑진','을미','병술','정축','무진','임술','계축'];
+const YANGIN={0:3,2:6,4:6,6:9,8:0},MUNCHANG={0:5,1:6,2:8,3:9,4:8,5:9,6:11,7:0,8:2,9:3};
+
+function findSinsal(saju){
+  const ds=saju.pillars.day.si,db=saju.pillars.day.bi,yb=saju.pillars.year.bi;
+  const en=Object.entries(saju.pillars).filter(([,p])=>p);const out=[];
+  for(const[k,p]of en){const bi=p.bi,pos=PN[k];
+    if(CHEONEUL[ds].includes(bi))out.push(`천을귀인[${pos} ${p.branch}] 최고 길신, 위기 시 조력`);
+    for(const[bn,bx]of[['년지',yb],['일지',db]]){const g=SG[bx];
+      if(DOHWA[g]===bi)out.push(`도화살[${pos} ${p.branch}, ${bn}기준] 매력·인기·이성운`);
+      if(YEOKMA[g]===bi)out.push(`역마살[${pos} ${p.branch}, ${bn}기준] 이동·변화·해외운`);
+      if(HWAGAE[g]===bi)out.push(`화개살[${pos} ${p.branch}, ${bn}기준] 예술성·정신세계`);}
+    if(YANGIN[ds]===bi)out.push(`양인살[${pos} ${p.branch}] 강한 기운·승부욕`);
+    if(MUNCHANG[ds]===bi)out.push(`문창귀인[${pos} ${p.branch}] 학문·시험·문서운`);}
+  const dp=saju.pillars.day.korean;
+  if(GWAEGANG.includes(dp))out.push(`괴강살[일주 ${dp}] 총명함과 강한 리더십`);
+  if(BAEKHO.includes(dp))out.push(`백호살[일주 ${dp}] 강렬한 기운, 전문직 적성`);
+  const ss=(db-ds+12)%12;const gm=[(ss+10)%12,(ss+11)%12];
+  const hits=en.filter(([k,p])=>k!=='day'&&gm.includes(p.bi)).map(([k,p])=>`${PN[k]} ${p.branch}`);
+  out.push(`공망: ${gm.map(b=>BRANCHES[b]).join(',')}${hits.length?` → 원국 해당: ${hits.join(',')}`:' (원국 내 해당 없음)'}`);
+  return[...new Set(out)];
+}
+
+function assessStrength(saju){
+  const de=STEM_ELEMENT[saju.pillars.day.si];const sup=[de,(de+4)%5];
+  const dr=sup.includes(BRANCH_ELEMENT[saju.pillars.month.bi]);
+  const dj=sup.includes(BRANCH_ELEMENT[saju.pillars.day.bi]);
+  const W={year:{s:8,b:8},month:{s:10,b:30},day:{s:0,b:20},hour:{s:8,b:10}};
+  let sc=0,mx=0;
+  for(const[k,p]of Object.entries(saju.pillars)){if(!p)continue;const w=W[k];mx+=w.s+w.b;
+    if(k!=='day'&&sup.includes(STEM_ELEMENT[p.si]))sc+=w.s;
+    if(sup.includes(BRANCH_ELEMENT[p.bi]))sc+=w.b;}
+  const pct=Math.round(sc/mx*100);
+  let v;if(pct>=60)v='신강';else if(pct>=45)v='중화에 가까운 신강';else if(pct>=35)v='중화에 가까운 신약';else v='신약';
+  const strong=pct>=45;
+  const yong=strong?[ELEMENTS[(de+1)%5]+'(식상)',ELEMENTS[(de+2)%5]+'(재성)',ELEMENTS[(de+3)%5]+'(관성)']:[ELEMENTS[(de+4)%5]+'(인성)',ELEMENTS[de]+'(비겁)'];
+  return{득령:dr,득지:dj,세력점수:pct+'%',판정:v,용신후보:yong};
+}
+
+function calcDaeun(saju,gender,birth){
+  const yang=STEM_YANG[saju.pillars.year.si];const male=gender==='M';
+  const fwd=(yang&&male)||(!yang&&!male);
+  const jdB=toJD(birth.year,birth.month,birth.day,(birth.hour??12)+(birth.minute??0)/60-9);
+  const terms=[];for(let y=birth.year-1;y<=birth.year+1;y++)for(const l of JEOL_LON)terms.push(findTerm(y,l));
+  terms.sort((a,b)=>a-b);
+  const nx=terms.find(t=>t>jdB),pv=[...terms].reverse().find(t=>t<jdB);
+  let su=Math.round((fwd?nx-jdB:jdB-pv)/3);su=Math.max(1,Math.min(10,su));
+  const ms=saju.pillars.month.si,mb=saju.pillars.month.bi;const list=[];
+  for(let i=1;i<=8;i++){const st=fwd?i:-i;const s=((ms+st)%10+10)%10,b=((mb+st)%12+12)%12;
+    list.push(`${su+(i-1)*10}세~ ${STEMS[s]}${BRANCHES[b]}(${ELEMENTS[STEM_ELEMENT[s]]}/${ELEMENTS[BRANCH_ELEMENT[b]]})`);}
+  return{방향:fwd?'순행':'역행',대운수:su,대운목록:list};
+}
+
+function calcSeun(saju){
+  const now=new Date();
+  const cur=calculateSaju({year:now.getFullYear(),month:now.getMonth()+1,day:now.getDate(),hour:12,minute:0,applyLmt:false});
+  const s=cur.pillars.year.si,b=cur.pillars.year.bi;
+  const ds=saju.pillars.day.si,dbb=saju.pillars.day.bi;
+  const inter=[];
+  if(Math.abs(s-ds)===5)inter.push(`세운 천간 ${STEMS[s]}이 일간 ${STEMS[ds]}과 천간합`);
+  if(CG_CHUNG.some(([x,y])=>(s===x&&ds===y)||(s===y&&ds===x)))inter.push(`세운 천간 ${STEMS[s]}이 일간 ${STEMS[ds]}과 충`);
+  if((b+6)%12===dbb)inter.push(`세운 지지 ${BRANCHES[b]}이 일지 ${BRANCHES[dbb]}과 충(일지충-환경 변동)`);
+  if(YUKHAP[`${b}${dbb}`]||YUKHAP[`${dbb}${b}`])inter.push(`세운 지지 ${BRANCHES[b]}이 일지 ${BRANCHES[dbb]}과 육합`);
+  return{올해:cur.sajuYear+'년',세운간지:cur.pillars.year.korean,이번달월운:cur.pillars.month.korean,원국과의상호작용:inter.length?inter:['특기할 합충 없음']};
+}
+
+// ============================================================
+// UI + AI 해석
+// ============================================================
+let ANALYSIS=null, BIRTH=null;
+
+function toggleUnknownTime(){
+  const unk=document.getElementById('unknownTime').checked;
+  const hh=document.getElementById('hh'), mm=document.getElementById('mm');
+  if(unk){ hh.value=0; mm.value=0; hh.disabled=true; mm.disabled=true; }
+  else { hh.disabled=false; mm.disabled=false; hh.value=''; mm.value=0; }
+}
+
+function runCalc(){
+  const y=+document.getElementById('y').value,m=+document.getElementById('m').value,d=+document.getElementById('d').value;
+  const unk=document.getElementById('unknownTime').checked;
+  const hh=unk?0:+document.getElementById('hh').value;
+  const mm=unk?0:(+document.getElementById('mm').value||0);
+  const gender=document.getElementById('gender').value;
+  // 시간 미상(00:00 가정) 시 진태양시 보정을 강제 해제: 보정하면 전날 23:30이 되어 일주가 바뀌는 문제 방지
+  const lmt=unk?false:document.getElementById('lmt').checked;
+  const uname=(document.getElementById('uname').value||'').trim()||'회원';
+  if(!y||!m||!d||(!unk&&document.getElementById('hh').value==='')){alert('생년월일과 시간을 입력해주세요. 시간을 모르면 체크박스를 선택하세요.');return;}
+  BIRTH={year:y,month:m,day:d,hour:hh,minute:mm,applyLmt:lmt,gender,name:uname,timeUnknown:unk};
+  const saju=calculateSaju(BIRTH);
+  ANALYSIS={사주원국:{},일간:saju.dayMaster,오행분포:saju.elementCount,절기:saju.jeol,보정시각:saju.correctedTime,야자시:saju.yaja,
+    합충형파해:findRelations(saju),신살:findSinsal(saju),신강신약:assessStrength(saju),
+    대운:calcDaeun(saju,gender,BIRTH),세운:calcSeun(saju),성별:gender==='M'?'남성':'여성'};
+  for(const[k,p]of Object.entries(saju.pillars)){
+    ANALYSIS.사주원국[PN[k]]=p?{간지:p.korean,한자:p.hanja,천간오행:p.stemEl,지지오행:p.branchEl,천간십성:p.stemTG,지지본기십성:p.branchTG,지장간:p.hidden.join(',')}:'시간 미상';}
+  renderMyeongsik(saju);
+  document.getElementById('resultCard').classList.remove('hidden');
+  document.getElementById('aiCard').classList.add('hidden');
+  document.getElementById('parts').innerHTML='';
+  document.getElementById('aiBtn').disabled=false;
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+}
+
+function renderMyeongsik(saju){
+  const order=['hour','day','month','year']; // 전통 표기: 시일월년 (오른쪽→왼쪽 읽기 관행을 좌측 시주 배치로)
+  const box=document.getElementById('myeongsik');box.innerHTML='';
+  for(const k of order){const p=saju.pillars[k];
+    const el=document.createElement('div');el.className='pillar';
+    if(!p){el.innerHTML=`<div class="pos">${PN[k]}</div><div class="hanja" style="opacity:0.25">未<br>詳</div><div class="kr">시간 미상</div>`;box.appendChild(el);continue;}
+    el.innerHTML=`<div class="pos">${PN[k]}${k==='day'?' · 나':''}</div>
+      <div class="hanja"><div class="el-${p.stemEl}">${p.hanja[0]}</div><div class="el-${p.branchEl}">${p.hanja[1]}</div></div>
+      <div class="kr">${p.korean}</div>
+      <div class="tg">${p.stemTG} / ${p.branchTG}</div>`;
+    box.appendChild(el);}
+  document.getElementById('birthLabel').textContent=`보정시각 ${saju.correctedTime}${BIRTH.timeUnknown?' · 시간 미상(00:00 기준)':''} · ${saju.jeol} 절기`;
+  const total=Object.values(saju.elementCount).reduce((a,b)=>a+b,0);
+  document.getElementById('ebar').innerHTML=ELEMENTS.map(e=>`<div style="width:${saju.elementCount[e]/total*100}%;background:${EL_COLOR[e]}"></div>`).join('');
+  document.getElementById('elegend').innerHTML=ELEMENTS.map(e=>`<span><span style="color:${EL_COLOR[e]}">●</span> ${e} ${saju.elementCount[e]}</span>`).join('');
+  const st=ANALYSIS.신강신약;
+  const chips=[`일간 <b>${saju.dayMaster.stem}(${saju.dayMaster.element})</b>`,`판정 <b>${st.판정}</b>`,`세력 <b>${st.세력점수}</b>`,`대운 <b>${ANALYSIS.대운.방향} ${ANALYSIS.대운.대운수}수</b>`,`올해 세운 <b>${ANALYSIS.세운.세운간지}</b>`];
+  document.getElementById('chips').innerHTML=chips.map(c=>`<span class="chip">${c}</span>`).join('');
+}
+
+// ---- 4단계 AI 해석 ----
+const SYSTEM_PROMPT=`당신은 30년 경력의 명리학 고수인데, 말투는 학자가 아니라 단골손님과 편하게 대화하는 동네 최고 실력자입니다. 지금 {NAME}님 한 사람의 사주만을 위해 이야기합니다.
+
+[가장 중요한 원칙: 깊이]
+- 개념 강의 금지. "사주팔자란 ~입니다", "대운이란 ~입니다" 같은 교과서식 도입 문장을 쓰지 마세요. 용어 설명이 꼭 필요하면 괄호 안에 한 줄로만: 예) 편관(나를 압박하는 긴장의 기운).
+- 분량의 90% 이상은 오직 {NAME}님 사주에만 해당하는 이야기여야 합니다. 아무 사주에나 갖다 붙일 수 있는 문장은 쓰지 마세요.
+- 얕게 여러 개 훑지 말고, 이 사주에서 중요한 포인트를 골라 깊게 파세요. 글자 하나를 말하더라도 "그래서 {NAME}님은 실제로 이런 상황에서 이런 선택을 하고, 이런 데서 스트레스를 받고, 이런 걸 잘하실 거예요"까지 내려가야 합니다.
+
+[말투]
+- 반드시 "{NAME}님"이라고 부르세요. "이분", "사주의 주인공" 같은 3인칭 금지. {NAME}님에게 직접 말하세요.
+- 실제 사람이 마주 앉아 말하는 것처럼: "~거든요", "~인 거예요", "근데 재밌는 게", "솔직히 말씀드리면" 같은 자연스러운 구어체 존댓말. 문어체 보고서 말투("~하다", "~로 판단된다") 금지.
+- 근거 없는 덕담은 하지 마세요. 좋은 건 좋다고, 조심할 건 조심하라고 솔직하게. 대신 깎아내리는 게 아니라 아끼는 마음으로.
+
+[절대 규칙]
+1. 사주팔자, 합충형파해, 신살, 신강신약 점수, 대운, 세운은 정밀 만세력 엔진이 계산해 제공합니다. 절대 재계산하거나 다른 간지를 말하지 마세요.
+2. 투자/재물 해석은 흐름과 성향까지만. 특정 종목이나 투자 상품 추천 절대 금지.
+3. 건강은 오행상 경향성만, 의학적 진단처럼 말하지 마세요.
+4. 마크다운 없이 자연스러운 문단으로. 소제목이 필요하면 【】 괄호.
+5. 각 파트는 반드시 완결된 문장과 자연스러운 마무리로 끝내세요. 하고 싶은 말이 많아도 핵심을 골라 깊게 쓰고 끝맺음까지 하는 것이, 이것저것 늘어놓다 끊기는 것보다 훨씬 낫습니다.`;
+
+const PARTS=[
+  {title:'타고난 그릇 · 나라는 사람',prompt:`[PART 1] 첫 문장부터 바로 {NAME}님 사주 이야기로 들어가세요. 이 여덟 글자에서 가장 눈에 띄는 구조적 특징이 뭔지부터 짚고, 일간을 중심으로 {NAME}님이 타고난 기질을 풀어주세요. 성격의 겉모습과 속마음이 어떻게 다른지, 사람들 사이에서 어떤 모습인지, 뭘 할 때 에너지가 차고 뭘 할 때 방전되는지 - 이 사주의 글자들을 근거로 구체적인 생활 장면까지. 분량은 500~700자 내외로 알차게.`},
+  {title:'한눈에 보는 총평',prompt:`[PART 2] {NAME}님 사주의 핵심을 압축해서: ① 오행의 균형(넘치는 기운과 부족한 기운이 삶에서 어떻게 나타나는지 2~3문장), ② 데이터의 신강신약·용신후보를 근거로 {NAME}님에게 보약이 되는 기운 한 가지와 그걸 살리는 생활 속 방법 하나, ③ 올해 세운이 이 사주와 만나 만드는 큰 흐름 한 문단. 그리고 마지막에, 이 사주에서 특히 이야기가 많은 영역(연애·재물·직업·학업 중 데이터 근거로 1~2개)을 짚으며 "이 부분은 깊게 볼수록 재미있는 사주"라는 여운으로 완결하세요. 상세한 합충·신살 나열이나 대운 전개는 하지 말고(그건 상세 리포트의 몫), 총평답게 간결히. 분량 500~700자 내외.`},
+];
+
+// ---- 자체 서버 경유 AI 호출 (API 키는 서버에만 존재) ----
+const ACCESS_CODE=new URLSearchParams(location.search).get('code')||'';
+
+// 동시 요청 관리: 평소 3개 동시, 한도 초과 감지 시 자동으로 1개씩 순차 전환
+let MAX_CONC=3, running=0; const waiters=[];
+async function acquire(){ while(running>=MAX_CONC){ await new Promise(r=>waiters.push(r)); } running++; }
+function release(){ running--; const w=waiters.shift(); if(w)w(); }
+const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
+
+async function rawFetch(sys,msgs){
+  const res=await fetch('/api/interpret',{method:'POST',
+    headers:{'Content-Type':'application/json','x-access-code':ACCESS_CODE},
+    body:JSON.stringify({system:sys,messages:msgs})});
+  return res.json();
+}
+
+// 한도 초과/혼잡 에러면 자리를 반납하고 기다렸다 다시 줄 서서 재시도 (최대 7회)
+async function apiCall(sys,msgs){
+  for(let attempt=0;attempt<7;attempt++){
+    await acquire();
+    let data=null, netFail=false;
+    try{ data=await rawFetch(sys,msgs); }
+    catch(e){ netFail=true; }
+    finally{ release(); } // 자리 반납 → 한도 축소 시 재시도들이 진짜 한 줄로 정렬됨
+    if(netFail){ await sleep(2000*(attempt+1)); continue; }
+    const err=data&&data.error?(typeof data.error==='string'?data.error:JSON.stringify(data.error)):null;
+    if(!err)return data;
+    if(/exceeded_limit|rate_limit|overloaded|concurrent|too_many|429|529/i.test(err)){
+      MAX_CONC=1; // 이후 모든 호출(재시도 포함)은 한 번에 하나씩
+      await sleep(3000*(attempt+1)+Math.random()*1500);
+      continue;
+    }
+    throw new Error(typeof data.error==='string'?data.error:(data.error.message||err));
+  }
+  throw new Error('지금 이용이 몰려 혼잡해요. 1분쯤 뒤에 "다시 풀이하기"를 눌러주세요.');
+}
+
+// 파트 하나 생성 (서버 max_tokens 3000이라 대부분 1회 완결, 만약을 위한 이어쓰기 + 마무리 안전망 유지)
+async function callPart(sys,messages){
+  let full='', lastStop='';
+  for(let cont=0;cont<4;cont++){
+    const msgs=full
+      ?[...messages,
+        {role:'assistant',content:full},
+        {role:'user',content:'방금 답변이 길이 제한으로 문장 중간에 끊겼습니다. 앞 내용을 반복하거나 인사말로 새로 시작하지 말고, 끊긴 지점부터 자연스럽게 이어지는 텍스트만 써서 마저 완성해주세요.'}]
+      :[...messages];
+    const data=await apiCall(sys,msgs);
+    const text=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
+    full+=text;
+    lastStop=data.stop_reason;
+    if(lastStop!=='max_tokens')break;
+  }
+  if(lastStop==='max_tokens'){
+    try{
+      const data=await apiCall(sys,[...messages,
+        {role:'assistant',content:full},
+        {role:'user',content:'새 내용을 추가하지 말고, 지금까지의 글이 자연스럽게 끝나도록 끊긴 문장을 완성하고 마무리 한두 문장만 써주세요.'}]);
+      full+=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
+    }catch(e){/* 마무리 실패 시 본문은 유지 */}
+  }
+  return full;
+}
+
+async function runInterpretation(){
+  document.getElementById('aiBtn').disabled=true;
+  document.getElementById('aiCard').classList.remove('hidden');
+  const partsBox=document.getElementById('parts');
+  const NAME=BIRTH.name||'회원';
+  const sys=SYSTEM_PROMPT.replaceAll('{NAME}',NAME)
+    +`\n6. 이 답변은 하나의 리포트를 구성하는 여러 섹션 중 하나입니다. 인사말이나 사주 전체 재소개 없이 해당 섹션 주제로 바로 들어가고, 다른 섹션에서 다룰 주제와의 중복은 최소화하세요.`;
+  const now=new Date();
+  const dataMsg=`[정밀 만세력 엔진 계산 데이터]\n이름: ${NAME}님\n현재 날짜: ${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일\n출생: ${BIRTH.year}년 ${BIRTH.month}월 ${BIRTH.day}일 ${BIRTH.timeUnknown?'시간 미상 (편의상 00:00 자시 기준으로 산출됨)':BIRTH.hour+'시 '+BIRTH.minute+'분'} / ${ANALYSIS.성별} / 만 ${now.getFullYear()-BIRTH.year}세 전후${BIRTH.timeUnknown?'\n※ 주의: 출생 시간을 몰라 00:00으로 가정해 시주를 산출했습니다. 시주에 기대는 해석은 하지 말거나 "시간이 정확하다면"이라는 전제를 달아 가볍게만 언급하고, 년·월·일주 중심으로 풀이하세요.':''}\n\n${JSON.stringify(ANALYSIS,null,1)}`;
+
+  // ---- 대기 화면 ----
+  partsBox.innerHTML=`<div class="progress-list">${PARTS.map((p,i)=>
+    `<div class="prog-item working" id="prog${i}"><span class="st"></span><span>PART ${i+1} · ${p.title}</span></div>`).join('')}
+    </div><div class="prog-hint">${NAME}님의 여덟 글자를 하나하나 살피고 있어요.<br>리포트가 완성되면 한 번에 보여드릴게요. (약 1~2분)</div>`;
+  const setDone=(i)=>{const e=document.getElementById('prog'+i);if(e){e.classList.remove('working');e.classList.add('done');}};
+
+  const pp=(i)=>PARTS[i].prompt.replaceAll('{NAME}',NAME);
+  const mk=(i)=>[{role:'user',content:dataMsg+'\n\n'+pp(i)}];
+
+  try{
+    const jobs=PARTS.map((_,i)=>callPart(sys,mk(i)).then(t=>{setDone(i);return t;}));
+    const texts=await Promise.all(jobs);
+    partsBox.innerHTML='';
+    texts.forEach((t,i)=>{
+      const el=document.createElement('div');el.className='part';
+      el.innerHTML=`<div class="ptitle"><span class="num">PART ${i+1}</span>${PARTS[i].title}</div><div class="pbody"></div>`;
+      el.querySelector('.pbody').textContent=t;
+      partsBox.appendChild(el);
+    });
+    document.getElementById('aiCard').scrollIntoView({behavior:'smooth'});
+  }catch(e){
+    partsBox.innerHTML=`<div class="err">해석 생성에 실패했습니다: ${e.message}. 아래 버튼으로 다시 시도해주세요.</div>`;
+  }
+  document.getElementById('aiBtn').disabled=false;
+  document.getElementById('aiBtn').textContent='다 시 풀 이 하 기';
+}
+
+// 페이지 이동 시 접속 코드 유지
+document.addEventListener('DOMContentLoaded',()=>{
+  const code=new URLSearchParams(location.search).get('code');
+  if(code)document.querySelectorAll('a[href$=".html"]').forEach(a=>{a.href=a.getAttribute('href')+'?code='+encodeURIComponent(code);});
+});
+</script>
