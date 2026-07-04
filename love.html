@@ -554,7 +554,15 @@ function sanitizeMonthly(text,required,allMonths){
     const fixed=_normT(header).includes(_normT(owner.기간))?header:('【'+owner.기간+' · '+owner.간지+'】');
     out.push(fixed+body);
   }
-  return intro+out.join('');
+  // 달 블록은 순번대로 정렬, 총정리 등 일반 블록은 맨 뒤 순서 유지
+  const monthsOut=[], others=[];
+  for(const seg of out){
+    const hd=(seg.match(/【[^】]*】/)||[''])[0];
+    const ow=allMonths.find(x=>hd.includes(x.간지)&&/\d+월\s*\d+일/.test(hd));
+    if(ow&&reqSet.has(ow.간지))monthsOut.push({n:ow.순번,seg});else others.push(seg);
+  }
+  monthsOut.sort((a,b)=>a.n-b.n);
+  return intro+monthsOut.map(x=>x.seg).join('')+others.join('');
 }
 async function callPartComplete(sys,messages,required){
   let full=await callPart(sys,messages);
