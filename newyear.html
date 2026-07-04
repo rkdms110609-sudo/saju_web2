@@ -401,10 +401,10 @@ const PARTS=[
 반드시 1년 전체의 큰 흐름으로만 — 월별로 쪼개서 설명하지 마세요 (몇 월이 어떻다는 식 금지, 그건 월별 흐름 파트의 몫). 각 운마다: 올해 이 영역의 전반적 기상도 + 이 사주의 글자·십성·세운 근거 하나 + 실전 조언 하나. 마지막 문장은 여운을 남기게 — 이 흐름이 크게 움직이는 시기가 존재한다는 걸 암시만 하고 다 풀어주지 마세요.
 건강운은 오행의 균형·과다 경향성 수준으로만 (특정 질병 언급 금지, 생활 습관 조언 중심).
 주의: 이 파트는 맛보기 깊이입니다. 너무 깊게 파지 말되, 두루뭉술한 바넘식 문장은 금지 — 짧아도 반드시 이 사주만의 근거로.`},
-  {title:'{YEAR} 월별 흐름 · 전반 여섯 달',prompt:`[PART 3] 데이터의 "월별운세기초데이터"에서 순번 1~6번 달을 순서대로 풀어주세요. 월별 풀이를 시작하기 전에 딱 한 문장으로, 사주의 한 달은 달력이 아니라 절기 기준이라 매달 4~8일경(절입일)에 시작되고 그래서 기간이 7일~다음달 7일처럼 표기된다는 점을 자연스럽게 안내해주세요. 
+  {title:'{YEAR} 월별 흐름 · 전반 여섯 달',prompt:`[PART 3] 데이터의 "월별운세기초데이터"에서 순번 1~6번 달을 순서대로 풀어주세요. 오직 이 여섯 달만 다루고 범위 밖의 달은 절대 다루지 마세요(앞 파트에서 빠진 달이 있어도 여기서 구제하지 말 것 - 시스템이 따로 처리합니다). 각 소제목의 기간과 간지는 반드시 데이터에서 같은 달의 것을 그대로 짝지어 쓰세요 - 기간 따로 간지 따로 조합 금지.  월별 풀이를 시작하기 전에 딱 한 문장으로, 사주의 한 달은 달력이 아니라 절기 기준이라 매달 4~8일경(절입일)에 시작되고 그래서 기간이 7일~다음달 7일처럼 표기된다는 점을 자연스럽게 안내해주세요. 
 각 달을 【기간 · 간지】 소제목(데이터의 날짜 그대로)으로 하나씩 빠짐없이 다루되, 합·충 등 신호가 있는 좋은 달은 5~8문장으로 풍성하게(어떤 글자 때문인지, 어떤 장면으로 나타날지, 어떻게 활용할지까지), 신호가 약하거나 조심할 달은 3~5문장으로 왜 그런지 글자로 설명하고 반드시 보완법·대응 전략을 1가지 이상 함께 - 나쁘다고만 하고 끝내기 금지. 모든 달에서 해석의 근거(어떤 십성·합충 때문인지)를 나열이 아니라 이야기로 풀어 녹이세요. 그리고 반드시 지킬 것: 점수 숫자나 "신호 없음" 같은 데이터 원문 표현을 리포트에 절대 그대로 노출하지 마세요 - 점수는 서술 비중을 정하는 내부 참고용입니다. 신호가 조용한 달은 나쁜 달이 아니라 평온한 달이니 "기반을 다지는 달", "쌓아두는 달"처럼 그 달의 쓸모로 풀어주세요. 보완·강화 행동은 현실적으로: 용신 오행을 일상 행동으로 번역하거나(예: 수 기운이 필요하면 수영·산책·계획과 기록 정리, 화 기운이면 사람 만나기·운동·발표 연습, 목 기운이면 새 배움 시작·식물 가꾸기, 금 기운이면 정리정돈·마무리 짓기, 토 기운이면 루틴 만들기·저축), 그 달 십성의 기운을 살리는 실용 행동(인성 달엔 공부·자격증, 식상 달엔 결과물 만들기·표현하기, 재성 달엔 가계와 협상 점검)으로 제안하세요. 부적·소금·방위 이동 같은 미신성 지침과 "긍정적으로 생각하세요"류 빈 덕담은 금지. 각 달의 마지막 문장은 그 달을 잘 보내는 방법이나 그 달의 쓸모로 맺어서, 어떤 달을 읽어도 손에 잡히는 것 하나는 남게 하세요.  달마다 내용이 실제로 달라야 합니다 — 근거가 다르니까요.
 각 달은 재물/애정/직장 등 테마별로 쪼개지 말고, 그 달의 전반적인 기운과 키워드로 종합해서 풀어주세요.`},
-  {title:'{YEAR} 월별 흐름 · 후반 여섯 달과 총정리',prompt:`[PART 4] 데이터의 "월별운세기초데이터"에서 순번 7~12번 달을 PART 3과 같은 상세한 방식(좋은 달은 5~8문장 풍성하게, 조심할 달은 반드시 보완법과 함께, 테마별로 쪼개지 않고 종합 흐름으로, 날짜 그대로)으로 풀어주세요.
+  {title:'{YEAR} 월별 흐름 · 후반 여섯 달과 총정리',prompt:`[PART 4] 데이터의 "월별운세기초데이터"에서 순번 7~12번 달을 PART 3과 같은 상세한 방식 오직 이 여섯 달만 다루고 범위 밖의 달은 절대 다루지 마세요(앞 파트에서 빠진 달이 있어도 여기서 구제하지 말 것 - 시스템이 따로 처리합니다). 각 소제목의 기간과 간지는 반드시 데이터에서 같은 달의 것을 그대로 짝지어 쓰세요 - 기간 따로 간지 따로 조합 금지. (좋은 달은 5~8문장 풍성하게, 조심할 달은 반드시 보완법과 함께, 테마별로 쪼개지 않고 종합 흐름으로, 날짜 그대로)으로 풀어주세요.
 마지막에 【{YEAR}을 관통하는 두 가지】로 올해 전체를 꿰는 실전 조언 두 개를 남기고, {NAME}님에게 건네는 새해 덕담 한 문장으로 따뜻하게 마무리해주세요.`}
 ];
 
@@ -485,15 +485,40 @@ function requiredFor(prompt){
   if(prompt.includes('7~12번'))return mons.slice(6);
   return null;
 }
+function _normT(t){return String(t).replace(/\s+/g,'');}
+// 생성된 월별 텍스트 정리: 범위 밖 달 블록 제거 + 기간이 틀린 소제목 교정
+function sanitizeMonthly(text,required,allMonths){
+  const re=/【[^】]*】/g; let mm; const marks=[];
+  while((mm=re.exec(text))){marks.push({h:mm[0],start:mm.index});}
+  if(!marks.length)return text;
+  const intro=text.slice(0,marks[0].start);
+  const reqSet=new Set(required.map(x=>x.간지));
+  const out=[];
+  for(let i=0;i<marks.length;i++){
+    const end=i+1<marks.length?marks[i+1].start:text.length;
+    const header=marks[i].h;
+    const body=text.slice(marks[i].start+header.length,end);
+    const hasDate=/\d+월\s*\d+일/.test(header);
+    const owner=allMonths.find(x=>header.includes(x.간지));
+    if(!owner||!hasDate){out.push(header+body);continue;} // 총정리 등 일반 소제목은 유지
+    if(!reqSet.has(owner.간지))continue;                    // 이 파트 범위 밖의 달 → 블록 제거
+    // 간지는 맞는데 기간이 틀린 소제목 → 엔진 데이터의 진짜 기간으로 교정
+    const fixed=_normT(header).includes(_normT(owner.기간))?header:('【'+owner.기간+' · '+owner.간지+'】');
+    out.push(fixed+body);
+  }
+  return intro+out.join('');
+}
 async function callPartComplete(sys,messages,required){
   let full=await callPart(sys,messages);
   if(required){
-    const norm=t=>String(t).replace(/\s+/g,'');
-    for(let r=0;r<2;r++){
-      const nf=norm(full);
-      const missing=required.filter(m=>!nf.includes(norm(m.기간))&&!full.includes(m.간지));
+    const allMonths=findMonthlyArr(ANALYSIS)||required;
+    for(let r=0;r<3;r++){
+      full=sanitizeMonthly(full,required,allMonths);
+      // 존재 판정: 소제목에 해당 달의 간지가 있어야 인정 (본문 스침 언급은 무시)
+      const headers=(full.match(/【[^】]*】/g)||[]).join(' ');
+      const missing=required.filter(x=>!headers.includes(x.간지));
       if(!missing.length)break;
-      const ask='방금 답변에서 다음 달이 빠졌습니다: '+missing.map(m=>'【'+m.기간+' · '+m.간지+'】').join(', ')+'. 이미 작성한 달들을 반복하거나 요약하지 말고, 빠진 달만 앞의 달들과 같은 형식·같은 상세함으로 이어서 작성해주세요.';
+      const ask='방금 답변에서 다음 달이 빠졌습니다: '+missing.map(x=>'【'+x.기간+' · '+x.간지+'】').join(', ')+'. 이미 작성한 달은 반복하지 말고, 빠진 달만 같은 형식·같은 상세함으로 작성하세요. 소제목의 기간과 간지는 위에 적힌 그대로 짝지어 쓰세요.';
       try{
         const add=await callPart(sys,[...messages,{role:'assistant',content:full},{role:'user',content:ask}]);
         full+='\n\n'+add;
