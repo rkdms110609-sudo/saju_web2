@@ -110,6 +110,7 @@
         <div><label class="f">시 (0-23)</label><input id="hh" type="number" placeholder="8" min="0" max="23"></div>
         <div><label class="f">분</label><input id="mm" type="number" placeholder="20" min="0" max="59" value="0"></div>
         <div class="full check-row"><input id="unknownTime" type="checkbox" onchange="toggleUnknownTime()"><label for="unknownTime">태어난 시간을 몰라요 (00:00 기준으로 계산)</label></div>
+        <div class="full"><label class="f">이용권 키</label><input id="license" type="text" placeholder="구매 시 이메일로 받은 키 · 무료 오픈 기간엔 비워두세요"></div>
         <div class="full check-row"><input id="lmt" type="checkbox" checked><label for="lmt">진태양시 보정 적용 (한국 출생, -30분)</label></div>
       </div>
       <button class="btn" onclick="runCalc()">내 사주 펼치기 ✦</button>
@@ -377,7 +378,8 @@ function renderMyeongsik(saju){
 // ---- 4단계 AI 해석 ----
 const SYSTEM_PROMPT=`당신은 30년 경력의 명리학 고수인데, 말투는 돈 얘기를 편하게 나누는 동네 최고 실력자입니다. 지금 {NAME}님의 재물운을 풀이합니다.
 [원칙] 개념 강의 금지(용어는 괄호 한 줄만). 아무 사주에나 붙는 문장 금지. 반드시 "{NAME}님" 직접 호칭. 자연스러운 구어체 존댓말. 근거 없는 덕담 금지.
-[특별 규칙] 1. 특정 금융상품·종목·코인·부동산 매물 추천 절대 금지. 수익 보장 표현 금지. "재물 기운의 흐름"까지만 - 구체적 금전 결정은 본인 몫임을 존중. 2. 데이터의 "재물 관심사"에 초점을 맞추세요. 3. 신강신약과 재성의 균형(재다신약 여부)을 반드시 함께 판단하세요 - 재성이 많다고 무조건 부자 사주가 아닙니다. 4. 엔진 데이터 재계산 금지, 날짜 그대로. 5. 마크다운 없이, 소제목 【】, 완결 문장. 6. 인사말 없이 바로 본론, 섹션 간 중복 최소화.`;
+[특별 규칙] 1. 특정 금융상품·종목·코인·부동산 매물 추천 절대 금지. 수익 보장 표현 금지. "재물 기운의 흐름"까지만 - 구체적 금전 결정은 본인 몫임을 존중. 2. 데이터의 "재물 관심사"에 초점을 맞추세요. 3. 신강신약과 재성의 균형(재다신약 여부)을 반드시 함께 판단하세요 - 재성이 많다고 무조건 부자 사주가 아닙니다. 4. 엔진 데이터 재계산 금지, 날짜 그대로. 5. 마크다운 없이, 소제목 【】, 완결 문장. 6. 인사말 없이 바로 본론, 섹션 간 중복 최소화.
+[사주별 답변 철학] 흐름이 아쉽다는 판정으로 끝내지 마세요 - 반드시 "그래서 어떻게 극복하는지"를 함께 주세요. 흐름이 좋다는 칭찬으로 끝내지 마세요 - "그래서 어떻게 극대화하는지"를 함께 주세요. 모든 판정에는 다음 행동이 따라옵니다.`;
 
 const PARTS=[
   {title:'돈을 대하는 나의 그릇',prompt:`[PART 1] 첫 문장부터 바로 {NAME}님 얘기로. 일간과 데이터의 "원국구조"(재성·식상·비겁 개수) 그리고 신강신약을 함께 근거로, {NAME}님의 재물 그릇을 깊게: 돈이 들어오는 방식(꾸준형인지 기회포착형인지), 새는 구멍(비겁·지출 패턴), 재다신약이라면 그 의미까지 솔직하게.`},
@@ -389,6 +391,7 @@ const PARTS=[
 
 // ---- 자체 서버 경유 AI 호출 (API 키는 서버에만 존재) ----
 const ACCESS_CODE=new URLSearchParams(location.search).get('code')||'';
+const PRODUCT_ID='money';
 
 // 동시 요청 관리: 평소 3개 동시, 한도 초과 감지 시 자동으로 1개씩 순차 전환
 let MAX_CONC=3, running=0; const waiters=[];
@@ -398,7 +401,7 @@ const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
 
 async function rawFetch(sys,msgs){
   const res=await fetch('/api/interpret',{method:'POST',
-    headers:{'Content-Type':'application/json','x-access-code':ACCESS_CODE},
+    headers:{'Content-Type':'application/json','x-access-code':ACCESS_CODE,'x-product':PRODUCT_ID,'x-license':(document.getElementById('license')?document.getElementById('license').value.trim():'')},
     body:JSON.stringify({system:sys,messages:msgs})});
   return res.json();
 }
@@ -520,6 +523,17 @@ async function runInterpretation(){
   document.getElementById('aiBtn').disabled=true;
   document.getElementById('aiCard').classList.remove('hidden');
   const partsBox=document.getElementById('parts');
+  // 이용권 사전 확인 (유료 오픈된 상품이면 여기서 사용 1회 차감)
+  try{
+    const lic=(document.getElementById('license')?document.getElementById('license').value.trim():'');
+    const pre=await fetch('/api/interpret',{method:'POST',headers:{'Content-Type':'application/json','x-access-code':ACCESS_CODE,'x-product':PRODUCT_ID,'x-license':lic},body:JSON.stringify({mode:'unlock',messages:[{role:'user',content:'unlock'}]})});
+    const pd=await pre.json();
+    if(!pre.ok){
+      partsBox.innerHTML='<div class="err">'+(pd.error||'이용권 확인에 실패했어요.')+(pd.buyUrl?' <a href="'+pd.buyUrl+'" target="_blank" style="color:var(--earth)">👉 이용권 구매하기</a>':'')+'</div>';
+      document.getElementById('aiBtn').disabled=false;
+      return;
+    }
+  }catch(e){/* 네트워크 오류 시 본 호출에서 다시 검증됨 */}
   const NAME=BIRTH.name||'회원';
   const sys=SYSTEM_PROMPT.replaceAll('{NAME}',NAME)
     +`\n6. 이 답변은 하나의 리포트를 구성하는 여러 섹션 중 하나입니다. 인사말이나 사주 전체 재소개 없이 해당 섹션 주제로 바로 들어가고, 다른 섹션에서 다룰 주제와의 중복은 최소화하세요.`;

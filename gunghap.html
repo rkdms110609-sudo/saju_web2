@@ -88,10 +88,10 @@
 <div class="saju-app">
   <div class="wrap">
     <div class="masthead">
-      <div class="seal-mark">學</div>
+      <div class="seal-mark">命</div>
       <p class="brand">✦ 사 주 별 ✦</p>
-      <h1>학업 · 시험운</h1>
-      <p>인성 · 문창귀인 정밀 계산 · 합격의 시기 AI 풀이</p>
+      <h1>궁합</h1>
+      <p>두 사람의 여덟 글자가 만나면 ✧ 서로를 살리는 인연 읽기</p>
       <p style="margin-top:10px"><a href="index.html" style="color:var(--earth);font-size:13px;text-decoration:none;border-bottom:1px solid var(--earth)">← 전체 운세 보기</a></p>
     </div>
 
@@ -99,36 +99,45 @@
     <div class="card" id="inputCard">
       <h2>사주 정보 입력</h2>
       <div class="form-grid">
-        <div><label class="f">이름 (부를 호칭)</label><input id="uname" type="text" placeholder="지민" maxlength="12"></div>
-        <div><label class="f">성별</label>
-          <select id="gender"><option value="F">여성</option><option value="M">남성</option></select></div>
-        <div><label class="f">목표</label>
-          <select id="tctx"><option value="시험 합격 (수능·고시·공채 등)">시험 합격 (수능·고시·공채 등)</option><option value="자격증·어학">자격증·어학</option><option value="진학·유학·대학원">진학·유학·대학원</option></select></div>
+        <div class="full" style="font-size:12px;color:var(--seal);letter-spacing:2px">✦ 나의 정보</div>
+        <div><label class="f">이름 (호칭)</label><input id="uname" type="text" placeholder="지민" maxlength="12"></div>
+        <div><label class="f">성별</label><select id="gender"><option value="F">여성</option><option value="M">남성</option></select></div>
+        <div><label class="f">관계</label><select id="rel"><option>썸 · 짝사랑</option><option>연애 중</option><option>부부 · 약혼</option></select></div>
         <div><label class="f">출생년 (양력)</label><input id="y" type="number" placeholder="1992" min="1900" max="2026"></div>
         <div><label class="f">월</label><input id="m" type="number" placeholder="7" min="1" max="12"></div>
         <div><label class="f">일</label><input id="d" type="number" placeholder="8" min="1" max="31"></div>
         <div><label class="f">시 (0-23)</label><input id="hh" type="number" placeholder="8" min="0" max="23"></div>
         <div><label class="f">분</label><input id="mm" type="number" placeholder="20" min="0" max="59" value="0"></div>
-        <div class="full check-row"><input id="unknownTime" type="checkbox" onchange="toggleUnknownTime()"><label for="unknownTime">태어난 시간을 몰라요 (00:00 기준으로 계산)</label></div>
+        <div class="check-row"><input id="unknownTime" type="checkbox" onchange="tgU('')"><label for="unknownTime">시간 몰라요</label></div>
+        <div class="full" style="font-size:12px;color:var(--seal);letter-spacing:2px;margin-top:8px">✦ 상대방의 정보</div>
+        <div><label class="f">이름 (호칭)</label><input id="uname2" type="text" placeholder="현우" maxlength="12"></div>
+        <div><label class="f">성별</label><select id="gender2"><option value="M">남성</option><option value="F">여성</option></select></div>
+        <div></div>
+        <div><label class="f">출생년 (양력)</label><input id="y2" type="number" placeholder="1990" min="1900" max="2026"></div>
+        <div><label class="f">월</label><input id="m2" type="number" placeholder="3" min="1" max="12"></div>
+        <div><label class="f">일</label><input id="d2" type="number" placeholder="15" min="1" max="31"></div>
+        <div><label class="f">시 (0-23)</label><input id="hh2" type="number" placeholder="10" min="0" max="23"></div>
+        <div><label class="f">분</label><input id="mm2" type="number" placeholder="30" min="0" max="59" value="0"></div>
+        <div class="check-row"><input id="unknownTime2" type="checkbox" onchange="tgU('2')"><label for="unknownTime2">시간 몰라요</label></div>
         <div class="full"><label class="f">이용권 키</label><input id="license" type="text" placeholder="구매 시 이메일로 받은 키 · 무료 오픈 기간엔 비워두세요"></div>
-        <div class="full check-row"><input id="lmt" type="checkbox" checked><label for="lmt">진태양시 보정 적용 (한국 출생, -30분)</label></div>
+        <div class="full check-row"><input id="lmt" type="checkbox" checked><label for="lmt">진태양시 보정 적용 (한국 출생)</label></div>
       </div>
-      <button class="btn" onclick="runCalc()">내 사주 펼치기 ✦</button>
+      <button class="btn" onclick="runCalc()"><button class="btn" onclick="runCalc()">내 사주 펼치기 ✦</button>
     </div>
 
     <!-- 명식 결과 -->
     <div class="card hidden" id="resultCard">
-      <h2>사주 원국 <span id="birthLabel" style="font-weight:400;font-size:12px;color:var(--paper-dim);margin-left:auto"></span></h2>
+      <h2>두 사람의 명식 <span id="birthLabel" style="font-weight:400;font-size:12px;color:var(--paper-dim);margin-left:auto"></span></h2>
       <div class="myeongsik" id="myeongsik"></div>
       <div class="ebar" id="ebar"></div>
       <div class="elegend" id="elegend"></div>
       <div class="chips" id="chips"></div>
-      <button class="btn" id="aiBtn" onclick="runInterpretation()">AI 시 험 운 풀 이</button>
+      <button class="btn" id="aiBtn" onclick="runInterpretation()">우리 궁합 풀어보기 ✦</button>
     </div>
 
     <!-- AI 해석 -->
     <div class="card hidden" id="aiCard">
-      <h2>학업·시험운 리포트</h2>
+      <h2>궁합 리포트</h2>
       <div id="parts"></div>
       <div class="notice">본 풀이는 명리학 이론에 근거한 참고용 해석이며, 중요한 결정은 본인의 판단과 전문가 상담을 병행하시기 바랍니다. 투자 관련 내용은 재물운의 흐름 해석일 뿐 특정 투자 권유가 아닙니다.</div>
     </div>
@@ -279,120 +288,139 @@ function calcSeun(saju){
   return{올해:cur.sajuYear+'년',세운간지:cur.pillars.year.korean,이번달월운:cur.pillars.month.korean,원국과의상호작용:inter.length?inter:['특기할 합충 없음']};
 }
 
-// ---- 테마운세 공용 계산 ----
-function tenGodOf(dsIdx,tIdx){const de=STEM_ELEMENT[dsIdx],te=STEM_ELEMENT[tIdx];let r;if(te===de)r=0;else if(te===(de+1)%5)r=1;else if(te===(de+2)%5)r=2;else if(te===(de+3)%5)r=3;else r=4;return TEN_GODS[r][STEM_YANG[tIdx]===STEM_YANG[dsIdx]?0:1];}
-function relOf(dsIdx,tIdx){const de=STEM_ELEMENT[dsIdx],te=STEM_ELEMENT[tIdx];if(te===de)return '비겁';if(te===(de+1)%5)return '식상';if(te===(de+2)%5)return '재성';if(te===(de+3)%5)return '관성';return '인성';}
-function jdToMD(jd){const ms=(jd-2440587.5)*86400000;const k=new Date(ms+9*3600*1000);return (k.getUTCMonth()+1)+'월 '+k.getUTCDate()+'일';}
-const HONGYEOM={0:6,1:8,2:2,3:7,4:4,5:4,6:10,7:9,8:0,9:8};
-function monthlyBase(){
-  const now=new Date();
-  const cur=calculateSaju({year:now.getFullYear(),month:now.getMonth()+1,day:now.getDate(),hour:12,minute:0,applyLmt:false});
-  const ty=cur.sajuYear; const ys=((ty-4)%10+10)%10; const msStart=[2,4,6,8,0][ys%5];
-  const arr=[];
-  for(let i=0;i<12;i++){const startY=i===11?ty+1:ty; const endY=i>=10?ty+1:ty; const s=(msStart+i)%10,b=JEOL_MB[i];
-    arr.push({i,s,b,순번:i+1,기간:jdToMD(findTerm(startY,JEOL_LON[i]))+' ~ '+jdToMD(findTerm(endY,JEOL_LON[(i+1)%12])),간지:STEMS[s]+BRANCHES[b]});}
-  return {ty,ys:((ty-4)%10+10)%10,yb:((ty-4)%12+12)%12,arr};
-}
-function countRel(saju,rel){let c=0;for(const[k,p]of Object.entries(saju.pillars)){if(!p)continue;if(k!=='day'&&relOf(saju.pillars.day.si,p.si)===rel)c++;const bm=HIDDEN_STEMS[p.bi][HIDDEN_STEMS[p.bi].length-1];if(relOf(saju.pillars.day.si,bm)===rel)c++;}return c;}
-
-function calcStudy(saju){
-  const ds=saju.pillars.day.si, db=saju.pillars.day.bi;
-  const mb=monthlyBase(); const months=[];
-  for(const m of mb.arr){
-    let score=0; const sig=[]; const warn=[];
-    const st=relOf(ds,m.s); const bm=HIDDEN_STEMS[m.b][HIDDEN_STEMS[m.b].length-1];
-    if(st==='인성'){const j=STEM_YANG[m.s]!==STEM_YANG[ds];score+=2;sig.push((j?'정인':'편인')+' 투출(합격 문서·흡수력의 기운)');}
-    if(MUNCHANG[ds]===m.b){score+=2;sig.push('문창귀인 발동(집중력·시험운 상승)');}
-    if(relOf(ds,bm)==='인성'){score+=1;sig.push('월지에 공부의 기운');}
-    if(st==='식상'){score+=1;sig.push('식상 투출(표현력 - 논술·면접·실기에 유리)');}
-    if(st==='재성')warn.push('재성 투출(재극인 - 딴생각·현실 걱정이 공부를 흔드는 달)');
-    if((m.b+6)%12===db)warn.push('일지충(생활 리듬이 흔들리기 쉬운 달 - 루틴 사수)');
-    months.push({순번:m.순번,기간:m.기간,간지:m.간지,학업점수:score,신호:sig.length?sig:['두드러진 변동 없음 - 꾸준히 쌓기 좋은 평온한 달'],주의:warn});
-  }
-  const top3=[...months].filter(x=>x.학업점수>0).sort((a,b)=>b.학업점수-a.학업점수).slice(0,3).map(x=>({순번:x.순번,기간:x.기간,간지:x.간지,점수:x.학업점수}));
-  return{원국구조:{인성개수:countRel(saju,'인성'),식상개수:countRel(saju,'식상'),관성개수:countRel(saju,'관성'),
-      문창귀인:Object.entries(saju.pillars).filter(([k,p])=>p&&MUNCHANG[ds]===p.bi).map(([k])=>PN[k]).join(',')||'원국에 없음(운에서 발동하는 시기가 중요)',
-      해석힌트:'인성=흡수·암기력, 식상=표현·응용력, 관성=규율·꾸준함'},
-    올해:mb.ty+'년 '+STEMS[mb.ys]+BRANCHES[mb.yb],
-    월별학업신호:months,학업유력시기TOP3:top3,
-    참고:'점수는 인성투출+2, 문창발동+2, 월지인성/식상투출+1의 합'};
-}
-
 // ============================================================
 // UI + AI 해석
 // ============================================================
 let ANALYSIS=null, BIRTH=null;
 
-function toggleUnknownTime(){
-  const unk=document.getElementById('unknownTime').checked;
-  const hh=document.getElementById('hh'), mm=document.getElementById('mm');
-  if(unk){ hh.value=0; mm.value=0; hh.disabled=true; mm.disabled=true; }
-  else { hh.disabled=false; mm.disabled=false; hh.value=''; mm.value=0; }
+function tgU(sfx){
+  const unk=document.getElementById('unknownTime'+sfx).checked;
+  const hh=document.getElementById('hh'+sfx), mm=document.getElementById('mm'+sfx);
+  if(unk){hh.value=0;mm.value=0;hh.disabled=true;mm.disabled=true;}
+  else{hh.disabled=false;mm.disabled=false;hh.value='';mm.value=0;}
 }
-
-function runCalc(){
-  const y=+document.getElementById('y').value,m=+document.getElementById('m').value,d=+document.getElementById('d').value;
-  const unk=document.getElementById('unknownTime').checked;
-  const hh=unk?0:+document.getElementById('hh').value;
-  const mm=unk?0:(+document.getElementById('mm').value||0);
-  const gender=document.getElementById('gender').value;
-  // 시간 미상(00:00 가정) 시 진태양시 보정을 강제 해제: 보정하면 전날 23:30이 되어 일주가 바뀌는 문제 방지
+function readPerson(sfx,defName){
+  const y=+document.getElementById('y'+sfx).value,m=+document.getElementById('m'+sfx).value,d=+document.getElementById('d'+sfx).value;
+  const unk=document.getElementById('unknownTime'+sfx).checked;
+  const hh=unk?0:+document.getElementById('hh'+sfx).value;
+  const mm=unk?0:(+document.getElementById('mm'+sfx).value||0);
+  const gender=document.getElementById('gender'+sfx).value;
+  const name=(document.getElementById('uname'+sfx).value||'').trim()||defName;
+  if(!y||!m||!d||(!unk&&document.getElementById('hh'+sfx).value===''))return null;
   const lmt=unk?false:document.getElementById('lmt').checked;
-  const uname=(document.getElementById('uname').value||'').trim()||'회원';
-  if(!y||!m||!d||(!unk&&document.getElementById('hh').value==='')){alert('생년월일과 시간을 입력해주세요. 시간을 모르면 체크박스를 선택하세요.');return;}
-  BIRTH={year:y,month:m,day:d,hour:hh,minute:mm,applyLmt:lmt,gender,name:uname,timeUnknown:unk,tctx:document.getElementById('tctx').value};
-  const saju=calculateSaju(BIRTH);
-  ANALYSIS={사주원국:{},일간:saju.dayMaster,오행분포:saju.elementCount,절기:saju.jeol,보정시각:saju.correctedTime,야자시:saju.yaja,
-    합충형파해:findRelations(saju),신살:findSinsal(saju),신강신약:assessStrength(saju),
-    대운:calcDaeun(saju,gender,BIRTH),세운:calcSeun(saju),성별:gender==='M'?'남성':'여성',
-    학업시험운:calcStudy(saju)};
-  for(const[k,p]of Object.entries(saju.pillars)){
-    ANALYSIS.사주원국[PN[k]]=p?{간지:p.korean,한자:p.hanja,천간오행:p.stemEl,지지오행:p.branchEl,천간십성:p.stemTG,지지본기십성:p.branchTG,지장간:p.hidden.join(',')}:'시간 미상';}
-  renderMyeongsik(saju);
+  return{year:y,month:m,day:d,hour:hh,minute:mm,applyLmt:lmt,gender,name,timeUnknown:unk};
+}
+const PN2={year:'년주',month:'월주',day:'일주',hour:'시주'};
+function personData(saju,info){
+  const o={이름:info.name,성별:info.gender==='M'?'남성':'여성',
+    출생:info.year+'-'+info.month+'-'+info.day+(info.timeUnknown?' (시간미상·00:00 기준, 시주 해석은 가볍게)':' '+info.hour+':'+String(info.minute).padStart(2,'0')),
+    사주원국:{},일간:saju.dayMaster,오행분포:saju.elementCount,신강신약:assessStrength(saju),신살:findSinsal(saju)};
+  for(const[k,p]of Object.entries(saju.pillars))o.사주원국[PN2[k]]=p?{간지:p.korean,천간십성:p.stemTG,지지본기십성:p.branchTG}:'시간 미상';
+  return o;
+}
+function calcGunghap(sA,sB,nA,nB){
+  const dsA=sA.pillars.day.si,dsB=sB.pillars.day.si,dbA=sA.pillars.day.bi,dbB=sB.pillars.day.bi;
+  const eA=STEM_ELEMENT[dsA],eB=STEM_ELEMENT[dsB];
+  let ilgan;
+  if(Math.abs(dsA-dsB)===5)ilgan='두 사람의 일간이 천간합(합화 '+CG_HAP[[Math.min(dsA,dsB),Math.max(dsA,dsB)].join('')]+') - 서로에게 자석처럼 끌리는 최고의 상성';
+  else if((eA+1)%5===eB)ilgan=nA+'님('+ELEMENTS[eA]+')이 '+nB+'님('+ELEMENTS[eB]+')을 생함 - '+nA+'님이 든든하게 밀어주고 '+nB+'님이 자라나는 관계';
+  else if((eB+1)%5===eA)ilgan=nB+'님('+ELEMENTS[eB]+')이 '+nA+'님('+ELEMENTS[eA]+')을 생함 - '+nB+'님이 든든하게 밀어주고 '+nA+'님이 자라나는 관계';
+  else if((eA+2)%5===eB)ilgan=nA+'님이 '+nB+'님을 극함 - '+nA+'님이 관계를 리드하는 결(존중이 더해지면 강한 팀)';
+  else if((eB+2)%5===eA)ilgan=nB+'님이 '+nA+'님을 극함 - '+nB+'님이 관계를 리드하는 결(존중이 더해지면 강한 팀)';
+  else ilgan='두 사람이 같은 '+ELEMENTS[eA]+' 기운(비화) - 닮은꼴, 친구 같은 연인';
+  const ilji=[];
+  if(YUKHAP[''+dbA+dbB]||YUKHAP[''+dbB+dbA])ilji.push('일지(배우자궁) 육합 - 마음의 방이 서로 묶이는 찰떡 신호');
+  if(dbA!==dbB&&SG[dbA]===SG[dbB])ilji.push('일지 삼합 관계 - 함께 있으면 자연스럽게 어울리는 합');
+  if(dbA===dbB)ilji.push('일지가 같은 글자 - 배우자궁이 닮은 두 사람(서로를 잘 이해함)');
+  if((dbA+6)%12===dbB)ilji.push('일지 충 - 생활 리듬과 방식이 달라 부딪힐 수 있음(다름이며, 보완 포인트)');
+  if(PA.some(([x,y])=>(dbA===x&&dbB===y)||(dbA===y&&dbB===x)))ilji.push('일지 파 - 사소한 데서 어긋나기 쉬움(작은 약속을 지키는 것으로 보완)');
+  if(HAE.some(([x,y])=>(dbA===x&&dbB===y)||(dbA===y&&dbB===x)))ilji.push('일지 해 - 서운함이 말없이 쌓이기 쉬움(표현으로 보완)');
+  const ybA=sA.pillars.year.bi,ybB=sB.pillars.year.bi;
+  let tti='무난한 띠 조합';
+  if(YUKHAP[''+ybA+ybB]||YUKHAP[''+ybB+ybA])tti='띠 육합 - 어른들이 좋아하는 조합';
+  else if(ybA!==ybB&&SG[ybA]===SG[ybB])tti='띠 삼합 - 잘 맞는 띠 조합';
+  else if((ybA+6)%12===ybB)tti='띠 충 - 겉으로 달라 보이는 조합(일간·일지가 더 중요하니 참고만)';
+  const give=[];
+  for(const[me,you,sMe,sYou]of[[nA,nB,sA,sB],[nB,nA,sB,sA]]){
+    const lack=ELEMENTS.filter(el=>sMe.elementCount[el]===0);
+    const fill=lack.filter(el=>sYou.elementCount[el]>=2);
+    if(fill.length)give.push(you+'님이 '+me+'님에게 없는 '+fill.join('·')+' 기운을 넉넉히 채워줌 - 함께 있으면 균형이 잡히는 관계');
+    const st=assessStrength(sMe);
+    const yong=st.용신후보.map(x=>x[0]);
+    const feed=yong.filter(el=>sYou.elementCount[el]>=2);
+    if(feed.length)give.push(you+'님이 '+me+'님에게 보약이 되는 '+feed.join('·')+' 기운을 지님 - 곁에 있으면 힘이 나는 상대');
+  }
+  // 월별 궁합 흐름
+  function jdToMD(jd){const ms=(jd-2440587.5)*86400000;const k=new Date(ms+9*3600*1000);return (k.getUTCMonth()+1)+'월 '+k.getUTCDate()+'일';}
+  const now=new Date();
+  const cur=calculateSaju({year:now.getFullYear(),month:now.getMonth()+1,day:now.getDate(),hour:12,minute:0,applyLmt:false});
+  const ty=cur.sajuYear;const ys=((ty-4)%10+10)%10;const msStart=[2,4,6,8,0][ys%5];
+  const months=[];
+  for(let i=0;i<12;i++){
+    const startY=i===11?ty+1:ty;const endY=i>=10?ty+1:ty;
+    const s=(msStart+i)%10,b=JEOL_MB[i];
+    let score=0;const sig=[];const warn=[];
+    for(const[nm,ds,db]of[[nA,dsA,dbA],[nB,dsB,dbB]]){
+      if(YUKHAP[''+b+db]||YUKHAP[''+db+b]){score+=2;sig.push(nm+'님의 배우자궁과 육합(마음이 열리는 달)');}
+      if(Math.abs(s-ds)===5){score+=1;sig.push(nm+'님의 일간과 합');}
+      if((b+6)%12===db)warn.push(nm+'님의 마음이 흔들리기 쉬운 달(이 달엔 '+nm+'님에게 더 다정하게)');
+    }
+    months.push({순번:i+1,기간:jdToMD(findTerm(startY,JEOL_LON[i]))+' ~ '+jdToMD(findTerm(endY,JEOL_LON[(i+1)%12])),
+      간지:STEMS[s]+BRANCHES[b],궁합점수:score,신호:sig.length?sig:['잔잔하고 평온한 달 - 일상을 함께 쌓기 좋은 시기'],주의:warn});
+  }
+  const top3=[...months].filter(x=>x.궁합점수>0).sort((a,b)=>b.궁합점수-a.궁합점수).slice(0,3).map(x=>({순번:x.순번,기간:x.기간,간지:x.간지,점수:x.궁합점수}));
+  return{관계의결:{일간관계:ilgan,일지관계:ilji.length?ilji:['특별한 합충 없음 - 무난하고 편안한, 노력으로 빚어가는 조합'],띠관계:tti},
+    서로에게주는것:give.length?give:['오행 표면상 큰 보완은 없지만, 그만큼 닮은 균형 - 함께 같은 방향을 보는 관계'],
+    월별궁합흐름:months,함께빛나는시기TOP3:top3,
+    참고:'점수는 내부 참고용. 궁합은 점수가 아니라 서로를 아는 만큼 좋아지는 것'};
+}
+function runCalc(){
+  const A=readPerson('','나'), B=readPerson('2','상대');
+  if(!A||!B){alert('두 사람의 생년월일과 시간을 모두 입력해주세요. 시간을 모르면 체크박스를 선택하세요.');return;}
+  BIRTH=A; BIRTH.partner=B;
+  const sA=calculateSaju(A), sB=calculateSaju(B);
+  ANALYSIS={관계:document.getElementById('rel').value,
+    나:personData(sA,A),상대:personData(sB,B),
+    궁합분석:calcGunghap(sA,sB,A.name,B.name)};
+  // 명식표: 나의 사주 + 상대 요약 칩
+  const order=['hour','day','month','year'];
+  const box=document.getElementById('myeongsik');box.innerHTML='';
+  for(const k of order){const p=sA.pillars[k];
+    const el=document.createElement('div');el.className='pillar';
+    if(!p){el.innerHTML='<div class="pos">'+PN2[k]+'</div><div class="hanja" style="opacity:0.25">未<br>詳</div><div class="kr">시간 미상</div>';box.appendChild(el);continue;}
+    el.innerHTML='<div class="pos">'+PN2[k]+(k==='day'?' · '+A.name:'')+'</div><div class="hanja"><div class="el-'+p.stemEl+'">'+p.hanja[0]+'</div><div class="el-'+p.branchEl+'">'+p.hanja[1]+'</div></div><div class="kr">'+p.korean+'</div><div class="tg">'+p.stemTG+' / '+p.branchTG+'</div>';
+    box.appendChild(el);}
+  document.getElementById('birthLabel').textContent=A.name+'님 명식 기준 표시';
+  const total=Object.values(sA.elementCount).reduce((a,b)=>a+b,0);
+  document.getElementById('ebar').innerHTML=ELEMENTS.map(e=>'<div style="width:'+(sA.elementCount[e]/total*100)+'%;background:'+EL_COLOR[e]+'"></div>').join('');
+  document.getElementById('elegend').innerHTML=ELEMENTS.map(e=>'<span><span style="color:'+EL_COLOR[e]+'">●</span> '+e+' '+sA.elementCount[e]+'</span>').join('');
+  const pillB=Object.values(sB.pillars).filter(x=>x).map(x=>x.korean).join(' ');
+  document.getElementById('chips').innerHTML='<span class="chip">'+B.name+'님 사주 <b>'+pillB+'</b></span><span class="chip">일간 <b>'+A.name+' '+sA.dayMaster.stem+' · '+B.name+' '+sB.dayMaster.stem+'</b></span><span class="chip">관계 <b>'+document.getElementById('rel').value+'</b></span>';
   document.getElementById('resultCard').classList.remove('hidden');
   document.getElementById('aiCard').classList.add('hidden');
   document.getElementById('parts').innerHTML='';
   document.getElementById('aiBtn').disabled=false;
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
 }
-
-function renderMyeongsik(saju){
-  const order=['hour','day','month','year']; // 전통 표기: 시일월년 (오른쪽→왼쪽 읽기 관행을 좌측 시주 배치로)
-  const box=document.getElementById('myeongsik');box.innerHTML='';
-  for(const k of order){const p=saju.pillars[k];
-    const el=document.createElement('div');el.className='pillar';
-    if(!p){el.innerHTML=`<div class="pos">${PN[k]}</div><div class="hanja" style="opacity:0.25">未<br>詳</div><div class="kr">시간 미상</div>`;box.appendChild(el);continue;}
-    el.innerHTML=`<div class="pos">${PN[k]}${k==='day'?' · 나':''}</div>
-      <div class="hanja"><div class="el-${p.stemEl}">${p.hanja[0]}</div><div class="el-${p.branchEl}">${p.hanja[1]}</div></div>
-      <div class="kr">${p.korean}</div>
-      <div class="tg">${p.stemTG} / ${p.branchTG}</div>`;
-    box.appendChild(el);}
-  document.getElementById('birthLabel').textContent=`보정시각 ${saju.correctedTime}${BIRTH.timeUnknown?' · 시간 미상(00:00 기준)':''} · ${saju.jeol} 절기`;
-  const total=Object.values(saju.elementCount).reduce((a,b)=>a+b,0);
-  document.getElementById('ebar').innerHTML=ELEMENTS.map(e=>`<div style="width:${saju.elementCount[e]/total*100}%;background:${EL_COLOR[e]}"></div>`).join('');
-  document.getElementById('elegend').innerHTML=ELEMENTS.map(e=>`<span><span style="color:${EL_COLOR[e]}">●</span> ${e} ${saju.elementCount[e]}</span>`).join('');
-  const st=ANALYSIS.신강신약;
-  const chips=[`일간 <b>${saju.dayMaster.stem}(${saju.dayMaster.element})</b>`,`판정 <b>${st.판정}</b>`,`세력 <b>${st.세력점수}</b>`,`대운 <b>${ANALYSIS.대운.방향} ${ANALYSIS.대운.대운수}수</b>`,`올해 세운 <b>${ANALYSIS.세운.세운간지}</b>`];
-  document.getElementById('chips').innerHTML=chips.map(c=>`<span class="chip">${c}</span>`).join('');
-}
-
-// ---- 4단계 AI 해석 ----
-const SYSTEM_PROMPT=`당신은 30년 경력의 명리학 고수인데, 말투는 수험생과 배우는 사람을 응원하는 동네 최고 실력자입니다. 지금 {NAME}님의 학업·시험운을 풀이합니다.
-[원칙] 개념 강의 금지(용어는 괄호 한 줄만). 아무 사주에나 붙는 문장 금지. 반드시 "{NAME}님" 직접 호칭. 자연스러운 구어체 존댓말. 근거 없는 덕담 금지.
-[특별 규칙] 1. 합격·불합격을 단정하거나 보장하는 표현 절대 금지 - "합격 기운이 들어온다/문서운이 열린다"의 언어로. 운은 노력을 대신하지 못하고 실어주는 바람이라는 관점 유지. 2. 데이터의 "학업 목표"에 맞춰 초점을 맞추세요(시험/자격증·어학/진학·유학). 3. 엔진 계산 데이터 재계산 금지, 기간 날짜 그대로. 4. 마크다운 없이, 소제목은 【】, 완결된 문장으로. 5. 인사말·재소개 없이 바로 본론, 섹션 간 중복 최소화.
-[사주별 답변 철학] 흐름이 아쉽다는 판정으로 끝내지 마세요 - 반드시 "그래서 어떻게 극복하는지"를 함께 주세요. 흐름이 좋다는 칭찬으로 끝내지 마세요 - "그래서 어떻게 극대화하는지"를 함께 주세요. 모든 판정에는 다음 행동이 따라옵니다.`;
+const SYSTEM_PROMPT=`당신은 30년 경력의 명리학 고수 "사주별"입니다. 지금 서로를 아끼는 두 사람, {NAME}님과 {NAME2}님의 궁합을 풀이합니다. 자연스러운 구어체 존댓말, 두 사람 모두 이름으로 직접 호칭, 개념 강의 금지(괄호 한 줄만), 아무 사주에나 붙는 문장 금지, 마크다운 없이 자연스러운 문단, 소제목은 【】.
+[궁합 풀이의 마음가짐 - 가장 중요]
+1. 이 풀이를 보는 사람은 상대를 사랑하거나 마음이 있는 사람입니다. 궁합을 점수로 재단하거나 겁주지 마세요. "안 맞는다"는 결론 금지.
+2. 충·극·파·해 같은 부딪히는 신호도 거짓말로 감추지는 말되, 반드시 "둘이 다른 지점"으로 번역하고 "서로 이렇게 보완하면 된다"는 구체적인 방법과 한 세트로만 말하세요. 좋은 신호는 마음껏 축하해 주세요.
+3. 이별·파국·불행을 암시하는 표현 금지. 조심할 시기는 "이 달엔 서로에게 이렇게 해주세요"의 언어로.
+4. 없는 합을 지어내는 거짓 칭찬도 금지 - 솔직하되, 언제나 사랑의 편에서.
+[사주별 답변 철학] 흐름이 아쉽다는 판정으로 끝내지 마세요 - 반드시 "그래서 어떻게 극복하는지"를 함께. 흐름이 좋다는 칭찬으로 끝내지 마세요 - "그래서 어떻게 극대화하는지"를 함께.
+[규칙] 두 사람의 사주와 궁합 데이터는 엔진이 계산해 제공 - 재계산 금지, 기간 날짜 그대로. 점수 숫자는 노출 금지(서술 비중 참고용). 각 파트는 완결된 문장으로, 인사말·재소개 없이 바로 본론, 섹션 간 중복 최소화.`;
 
 const PARTS=[
-  {title:'공부하는 사람으로서의 나',prompt:`[PART 1] 첫 문장부터 바로 {NAME}님 얘기로. 일간의 기질과 데이터의 "원국구조"(인성·식상·관성 개수, 문창귀인 위치)를 근거로 {NAME}님의 공부 스타일을 깊게: 암기형인지 이해·응용형인지, 몰입이 터지는 조건, 슬럼프가 오는 패턴, 시험장에서 강한지 실전에서 떠는지까지.`},
-  {title:'이 목표, 사주와 맞는 길인가',prompt:`[PART 2] 데이터의 학업 목표와 신강신약·용신후보를 근거로, 이 목표가 {NAME}님 사주의 기운과 어떻게 맞물리는지: 유리하게 작용하는 글자와 보완할 지점, 그리고 올해 세운이 이 도전에 실어주는 바람인지 맞바람인지. 합격 여부 단정 없이, 준비 전략의 관점으로.`},
-  {title:'월별 학업운 상세 · 전반 여섯 달',prompt:`[PART 3] 데이터의 "월별학업신호" 순번 1~6번 달을 다루세요. 오직 이 여섯 달만 다루고 범위 밖의 달은 절대 다루지 마세요(앞 파트에서 빠진 달이 있어도 여기서 구제하지 말 것 - 시스템이 따로 처리합니다). 각 소제목의 기간과 간지는 반드시 데이터에서 같은 달의 것을 그대로 짝지어 쓰세요 - 기간 따로 간지 따로 조합 금지. 월별 풀이를 시작하기 전에 딱 한 문장으로, 사주의 한 달은 달력이 아니라 절기 기준이라 매달 4~8일경(절입일)에 시작되고 그래서 기간이 7일~다음달 7일처럼 표기된다는 점을 자연스럽게 안내해주세요. 각 달을 【기간 · 간지】 소제목(데이터의 날짜 그대로)으로 하나씩 빠짐없이 다루세요. 신호가 강한 달(점수 2 이상)은 5~8문장으로 풍성하게 - 어떤 글자와 신호가 겹치는지, 실제 생활에서 어떤 장면으로 나타날 수 있는지, 이 달을 어떻게 활용할지까지. 신호가 약하거나 "주의"가 붙은 달은 3~5문장 - 왜 그런지 이 사주의 글자로 설명하고, 반드시 보완법·대응 전략을 1가지 이상(용신 오행을 살리는 방법 등 이 사주 근거로) 함께 주세요. 나쁘다고만 하고 끝내는 것 금지. 모든 달에서 해석의 근거(어떤 십성·합충·신살 때문인지)를 데이터의 신호·주의 항목에서 가져와 나열이 아니라 이야기로 풀어 녹이세요. 그리고 반드시 지킬 것: 점수 숫자나 "신호 없음" 같은 데이터 원문 표현을 리포트에 절대 그대로 노출하지 마세요 - 점수는 서술 비중을 정하는 내부 참고용입니다. 신호가 조용한 달은 나쁜 달이 아니라 평온한 달이니 "기반을 다지는 달", "쌓아두는 달"처럼 그 달의 쓸모로 풀어주세요. 보완·강화 행동은 현실적으로: 용신 오행을 일상 행동으로 번역하거나(예: 수 기운이 필요하면 수영·산책·계획과 기록 정리, 화 기운이면 사람 만나기·운동·발표 연습, 목 기운이면 새 배움 시작·식물 가꾸기, 금 기운이면 정리정돈·마무리 짓기, 토 기운이면 루틴 만들기·저축), 그 달 십성의 기운을 살리는 실용 행동(인성 달엔 공부·자격증, 식상 달엔 결과물 만들기·표현하기, 재성 달엔 가계와 협상 점검)으로 제안하세요. 부적·소금·방위 이동 같은 미신성 지침과 "긍정적으로 생각하세요"류 빈 덕담은 금지. 각 달의 마지막 문장은 그 달을 잘 보내는 방법이나 그 달의 쓸모로 맺어서, 어떤 달을 읽어도 손에 잡히는 것 하나는 남게 하세요. 학업 관점으로: 좋은 달은 진도·암기·시험·면접 중 무엇에 기운이 실리는지까지, {NAME}님의 학업 목표에 맞게. 재극인 주의 달은 집중이 흔들리는 이유와 루틴 사수법을 구체적으로.`},
-  {title:'월별 학업운 상세 · 후반 여섯 달',prompt:`[PART 4] 데이터의 "월별학업신호" 순번 7~12번 달을 같은 방식으로 다루세요. 오직 이 여섯 달만 다루고 범위 밖의 달은 절대 다루지 마세요(앞 파트에서 빠진 달이 있어도 여기서 구제하지 말 것 - 시스템이 따로 처리합니다). 각 소제목의 기간과 간지는 반드시 데이터에서 같은 달의 것을 그대로 짝지어 쓰세요 - 기간 따로 간지 따로 조합 금지. 각 달을 【기간 · 간지】 소제목(데이터의 날짜 그대로)으로 하나씩 빠짐없이 다루세요. 신호가 강한 달(점수 2 이상)은 5~8문장으로 풍성하게 - 어떤 글자와 신호가 겹치는지, 실제 생활에서 어떤 장면으로 나타날 수 있는지, 이 달을 어떻게 활용할지까지. 신호가 약하거나 "주의"가 붙은 달은 3~5문장 - 왜 그런지 이 사주의 글자로 설명하고, 반드시 보완법·대응 전략을 1가지 이상(용신 오행을 살리는 방법 등 이 사주 근거로) 함께 주세요. 나쁘다고만 하고 끝내는 것 금지. 모든 달에서 해석의 근거(어떤 십성·합충·신살 때문인지)를 데이터의 신호·주의 항목에서 가져와 나열이 아니라 이야기로 풀어 녹이세요. 그리고 반드시 지킬 것: 점수 숫자나 "신호 없음" 같은 데이터 원문 표현을 리포트에 절대 그대로 노출하지 마세요 - 점수는 서술 비중을 정하는 내부 참고용입니다. 신호가 조용한 달은 나쁜 달이 아니라 평온한 달이니 "기반을 다지는 달", "쌓아두는 달"처럼 그 달의 쓸모로 풀어주세요. 보완·강화 행동은 현실적으로: 용신 오행을 일상 행동으로 번역하거나(예: 수 기운이 필요하면 수영·산책·계획과 기록 정리, 화 기운이면 사람 만나기·운동·발표 연습, 목 기운이면 새 배움 시작·식물 가꾸기, 금 기운이면 정리정돈·마무리 짓기, 토 기운이면 루틴 만들기·저축), 그 달 십성의 기운을 살리는 실용 행동(인성 달엔 공부·자격증, 식상 달엔 결과물 만들기·표현하기, 재성 달엔 가계와 협상 점검)으로 제안하세요. 부적·소금·방위 이동 같은 미신성 지침과 "긍정적으로 생각하세요"류 빈 덕담은 금지. 각 달의 마지막 문장은 그 달을 잘 보내는 방법이나 그 달의 쓸모로 맺어서, 어떤 달을 읽어도 손에 잡히는 것 하나는 남게 하세요. 마지막에 "학업유력시기TOP3"를 한 해의 공부 지도로 한 문단 정리해주세요.`},
-  {title:'합격 기운을 내 편으로 만드는 법',prompt:`[PART 5] {NAME}님 사주에 맞는 공부 실천법 3가지 - 뻔한 "열심히 하세요" 말고 이 사주라서 필요한 것으로(용신 오행을 살리는 공부 환경·시간대·방법, 문창/인성을 깨우는 루틴 등). 마지막은 {NAME}님에게 건네는 진심 어린 응원 한 문장으로 완결.`}
+  {title:'두 사람의 결 · 만나면 어떤 그림인가',prompt:`[PART 1] 첫 문장부터 바로 두 분 이야기로. 데이터의 "나"와 "상대" 각각의 일간 기질을 짧게 소개하고, "궁합분석-관계의결"(일간관계·일지관계·띠관계)을 근거로 두 사람이 만나면 어떤 그림이 되는지 깊게: 누가 물을 주고 누가 자라는지, 배우자궁끼리는 어떻게 묶이는지, 연애에서 실제로 어떤 장면으로 나타날지까지. 관계(썸/연애중/부부)에 맞는 온도로.`},
+  {title:'서로를 살리는 것, 서로 다른 것',prompt:`[PART 2] 데이터의 "서로에게주는것"을 근거로 두 사람이 서로에게 채워주는 기운을 마음껏 축하하며 구체적으로 - 함께 있으면 왜 편안한지, 왜 힘이 나는지를 생활 장면으로. 그리고 "관계의결"에 충·파·해 같은 다른 지점이 있다면 숨기지 말고, 그것이 어떤 순간의 다름으로 나타나는지 + 서로 어떻게 보완하면 되는지를 한 세트로 다정하게. 다른 지점이 없다면 닮은 관계의 장점과 주의점(익숙함에 무뎌지지 않기)을.`},
+  {title:'둘이 함께 빛나는 시기, 서로를 아껴줄 시기',prompt:`[PART 3] 데이터의 "월별궁합흐름"과 "함께빛나는시기TOP3"를 근거로 올해 두 사람의 흐름을. 먼저 사주의 달은 절기 기준(매달 4~8일경 시작)이라는 걸 한 문장으로 안내. TOP3 달은 【기간 · 간지】 소제목(날짜 그대로)으로 왜 좋은지, 그 달에 함께 하면 좋은 것(여행·소개·중요한 대화 등)까지 5~8문장. "주의"가 붙은 달은 누구의 마음이 흔들리기 쉬운지와 상대가 어떻게 아껴주면 되는지를 3~5문장 - 겁주지 말고 배려 가이드로. 나머지 달은 흐름으로 간단히. 점수 숫자 노출 금지.`},
+  {title:'이 인연을 오래 가꾸는 법',prompt:`[PART 4] 두 사람의 사주 근거로 이 관계를 오래 가꾸는 실천법 3가지 - 뻔한 연애 조언 말고 이 두 사주라서 필요한 것으로(서로의 용신 기운을 살려주는 데이트·습관, 다른 지점을 만났을 때의 대화법 등). 마지막은 두 분에게 건네는 진심 어린 축복 한 문장으로 완결.`},
 ];
 
 // ---- 자체 서버 경유 AI 호출 (API 키는 서버에만 존재) ----
 const ACCESS_CODE=new URLSearchParams(location.search).get('code')||'';
-const PRODUCT_ID='study';
+const PRODUCT_ID='gunghap';
 
 // 동시 요청 관리: 평소 3개 동시, 한도 초과 감지 시 자동으로 1개씩 순차 전환
 let MAX_CONC=3, running=0; const waiters=[];
@@ -454,115 +482,42 @@ async function callPart(sys,messages){
   return full;
 }
 
-// ---- 월별 완결성 검사: 빠진 달을 감지해 자동 보충 ----
-function findMonthlyArr(obj){
-  for(const v of Object.values(obj)){
-    if(Array.isArray(v)&&v.length===12&&v[0]&&v[0].기간&&v[0].간지)return v;
-    if(v&&typeof v==='object'&&!Array.isArray(v)){const r=findMonthlyArr(v);if(r)return r;}
-  }
-  return null;
-}
-function requiredFor(prompt){
-  const mons=findMonthlyArr(ANALYSIS); if(!mons)return null;
-  if(prompt.includes('1~6번'))return mons.slice(0,6);
-  if(prompt.includes('7~12번'))return mons.slice(6);
-  return null;
-}
-function _normT(t){return String(t).replace(/\s+/g,'');}
-// 생성된 월별 텍스트 정리: 범위 밖 달 블록 제거 + 기간이 틀린 소제목 교정
-function sanitizeMonthly(text,required,allMonths){
-  const re=/【[^】]*】/g; let mm; const marks=[];
-  while((mm=re.exec(text))){marks.push({h:mm[0],start:mm.index});}
-  if(!marks.length)return text;
-  const intro=text.slice(0,marks[0].start);
-  const reqSet=new Set(required.map(x=>x.간지));
-  const out=[];
-  for(let i=0;i<marks.length;i++){
-    const end=i+1<marks.length?marks[i+1].start:text.length;
-    const header=marks[i].h;
-    const body=text.slice(marks[i].start+header.length,end);
-    const hasDate=/\d+월\s*\d+일/.test(header);
-    const owner=allMonths.find(x=>header.includes(x.간지));
-    if(!owner||!hasDate){out.push(header+body);continue;} // 총정리 등 일반 소제목은 유지
-    if(!reqSet.has(owner.간지))continue;                    // 이 파트 범위 밖의 달 → 블록 제거
-    // 간지는 맞는데 기간이 틀린 소제목 → 엔진 데이터의 진짜 기간으로 교정
-    const fixed=_normT(header).includes(_normT(owner.기간))?header:('【'+owner.기간+' · '+owner.간지+'】');
-    out.push(fixed+body);
-  }
-  // 달 블록은 순번대로 정렬, 총정리 등 일반 블록은 맨 뒤 순서 유지
-  const monthsOut=[], others=[];
-  for(const seg of out){
-    const hd=(seg.match(/【[^】]*】/)||[''])[0];
-    const ow=allMonths.find(x=>hd.includes(x.간지)&&/\d+월\s*\d+일/.test(hd));
-    if(ow&&reqSet.has(ow.간지))monthsOut.push({n:ow.순번,seg});else others.push(seg);
-  }
-  monthsOut.sort((a,b)=>a.n-b.n);
-  return intro+monthsOut.map(x=>x.seg).join('')+others.join('');
-}
-async function callPartComplete(sys,messages,required){
-  let full=await callPart(sys,messages);
-  if(required){
-    const allMonths=findMonthlyArr(ANALYSIS)||required;
-    for(let r=0;r<3;r++){
-      full=sanitizeMonthly(full,required,allMonths);
-      // 존재 판정: 소제목에 해당 달의 간지가 있어야 인정 (본문 스침 언급은 무시)
-      const headers=(full.match(/【[^】]*】/g)||[]).join(' ');
-      const missing=required.filter(x=>!headers.includes(x.간지));
-      if(!missing.length)break;
-      const ask='방금 답변에서 다음 달이 빠졌습니다: '+missing.map(x=>'【'+x.기간+' · '+x.간지+'】').join(', ')+'. 이미 작성한 달은 반복하지 말고, 빠진 달만 같은 형식·같은 상세함으로 작성하세요. 소제목의 기간과 간지는 위에 적힌 그대로 짝지어 쓰세요.';
-      try{
-        const add=await callPart(sys,[...messages,{role:'assistant',content:full},{role:'user',content:ask}]);
-        full+='\n\n'+add;
-      }catch(e){break;}
-    }
-  }
-  return full;
-}
-
-
 async function runInterpretation(){
   document.getElementById('aiBtn').disabled=true;
   document.getElementById('aiCard').classList.remove('hidden');
   const partsBox=document.getElementById('parts');
-  // 이용권 사전 확인 (유료 오픈된 상품이면 여기서 사용 1회 차감)
+  // 이용권 사전 확인
   try{
     const lic=(document.getElementById('license')?document.getElementById('license').value.trim():'');
     const pre=await fetch('/api/interpret',{method:'POST',headers:{'Content-Type':'application/json','x-access-code':ACCESS_CODE,'x-product':PRODUCT_ID,'x-license':lic},body:JSON.stringify({mode:'unlock',messages:[{role:'user',content:'unlock'}]})});
     const pd=await pre.json();
     if(!pre.ok){
-      partsBox.innerHTML='<div class="err">'+(pd.error||'이용권 확인에 실패했어요.')+(pd.buyUrl?' <a href="'+pd.buyUrl+'" target="_blank" style="color:var(--earth)">👉 이용권 구매하기</a>':'')+'</div>';
+      partsBox.innerHTML='<div class="err">'+(pd.error||'이용권 확인 실패')+(pd.buyUrl?' <a href="'+pd.buyUrl+'" target="_blank" style="color:var(--earth)">👉 이용권 구매하기</a>':'')+'</div>';
       document.getElementById('aiBtn').disabled=false;
       return;
     }
-  }catch(e){/* 네트워크 오류 시 본 호출에서 다시 검증됨 */}
-  const NAME=BIRTH.name||'회원';
-  const sys=SYSTEM_PROMPT.replaceAll('{NAME}',NAME)
-    +`\n6. 이 답변은 하나의 리포트를 구성하는 여러 섹션 중 하나입니다. 인사말이나 사주 전체 재소개 없이 해당 섹션 주제로 바로 들어가고, 다른 섹션에서 다룰 주제와의 중복은 최소화하세요.`;
+  }catch(e){}
+  const NAME=BIRTH.name, NAME2=BIRTH.partner.name;
+  const sys=SYSTEM_PROMPT.replaceAll('{NAME}',NAME).replaceAll('{NAME2}',NAME2);
   const now=new Date();
-  const dataMsg=`[정밀 만세력 엔진 계산 데이터]\n이름: ${NAME}님\n현재 날짜: ${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일\n출생: ${BIRTH.year}년 ${BIRTH.month}월 ${BIRTH.day}일 ${BIRTH.timeUnknown?'시간 미상 (편의상 00:00 자시 기준으로 산출됨)':BIRTH.hour+'시 '+BIRTH.minute+'분'} / ${ANALYSIS.성별} / 학업 목표: ${BIRTH.tctx} / 만 ${now.getFullYear()-BIRTH.year}세 전후${BIRTH.timeUnknown?'\n※ 주의: 출생 시간을 몰라 00:00으로 가정해 시주를 산출했습니다. 시주에 기대는 해석은 하지 말거나 "시간이 정확하다면"이라는 전제를 달아 가볍게만 언급하고, 년·월·일주 중심으로 풀이하세요.':''}\n\n${JSON.stringify(ANALYSIS,null,1)}`;
-
-  // ---- 대기 화면 ----
-  partsBox.innerHTML=`<div class="progress-list">${PARTS.map((p,i)=>
-    `<div class="prog-item working" id="prog${i}"><span class="st"></span><span>PART ${i+1} · ${p.title}</span></div>`).join('')}
-    </div><div class="prog-hint">${NAME}님의 공부 글자들을 하나하나 짚고 있어요.<br>리포트가 완성되면 한 번에 보여드릴게요. (약 1~2분)</div>`;
+  const dataMsg='[정밀 만세력 엔진 계산 데이터 - 두 사람]'+String.fromCharCode(10)+'현재 날짜: '+now.getFullYear()+'년 '+(now.getMonth()+1)+'월 '+now.getDate()+'일'+String.fromCharCode(10)+String.fromCharCode(10)+JSON.stringify(ANALYSIS,null,1);
+  partsBox.innerHTML='<div class="progress-list">'+PARTS.map((p,i)=>'<div class="prog-item working" id="prog'+i+'"><span class="st"></span><span>PART '+(i+1)+' · '+p.title+'</span></div>').join('')+'</div><div class="prog-hint">'+NAME+'님과 '+NAME2+'님의 인연의 실을 살피고 있어요.<br>리포트가 완성되면 한 번에 보여드릴게요. (약 1~2분)</div>';
   const setDone=(i)=>{const e=document.getElementById('prog'+i);if(e){e.classList.remove('working');e.classList.add('done');}};
-
-  const pp=(i)=>PARTS[i].prompt.replaceAll('{NAME}',NAME);
-  const mk=(i)=>[{role:'user',content:dataMsg+'\n\n'+pp(i)}];
-
+  const pp=(i)=>PARTS[i].prompt.replaceAll('{NAME}',NAME).replaceAll('{NAME2}',NAME2);
+  const mk=(i)=>[{role:'user',content:dataMsg+String.fromCharCode(10)+String.fromCharCode(10)+pp(i)}];
   try{
-    const jobs=PARTS.map((_,i)=>callPartComplete(sys,mk(i),requiredFor(pp(i))).then(t=>{setDone(i);return t;}));
+    const jobs=PARTS.map((_,i)=>callPart(sys,mk(i)).then(t=>{setDone(i);return t;}));
     const texts=await Promise.all(jobs);
     partsBox.innerHTML='';
     texts.forEach((t,i)=>{
       const el=document.createElement('div');el.className='part';
-      el.innerHTML=`<div class="ptitle"><span class="num">PART ${i+1}</span>${PARTS[i].title}</div><div class="pbody"></div>`;
+      el.innerHTML='<div class="ptitle"><span class="num">PART '+(i+1)+'</span>'+PARTS[i].title+'</div><div class="pbody"></div>';
       el.querySelector('.pbody').textContent=t;
       partsBox.appendChild(el);
     });
     document.getElementById('aiCard').scrollIntoView({behavior:'smooth'});
   }catch(e){
-    partsBox.innerHTML=`<div class="err">해석 생성에 실패했습니다: ${e.message}. 아래 버튼으로 다시 시도해주세요.</div>`;
+    partsBox.innerHTML='<div class="err">해석 생성에 실패했습니다: '+e.message+'. 아래 버튼으로 다시 시도해주세요.</div>';
   }
   document.getElementById('aiBtn').disabled=false;
   document.getElementById('aiBtn').textContent='다 시 풀 이 하 기';

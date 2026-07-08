@@ -88,10 +88,10 @@
 <div class="saju-app">
   <div class="wrap">
     <div class="masthead">
-      <div class="seal-mark">學</div>
+      <div class="seal-mark">命</div>
       <p class="brand">✦ 사 주 별 ✦</p>
-      <h1>학업 · 시험운</h1>
-      <p>인성 · 문창귀인 정밀 계산 · 합격의 시기 AI 풀이</p>
+      <h1>매력운</h1>
+      <p>도화 · 홍염 · 십성 정밀 계산 ✧ 나도 몰랐던 내 매력을 찾아드려요</p>
       <p style="margin-top:10px"><a href="index.html" style="color:var(--earth);font-size:13px;text-decoration:none;border-bottom:1px solid var(--earth)">← 전체 운세 보기</a></p>
     </div>
 
@@ -102,8 +102,6 @@
         <div><label class="f">이름 (부를 호칭)</label><input id="uname" type="text" placeholder="지민" maxlength="12"></div>
         <div><label class="f">성별</label>
           <select id="gender"><option value="F">여성</option><option value="M">남성</option></select></div>
-        <div><label class="f">목표</label>
-          <select id="tctx"><option value="시험 합격 (수능·고시·공채 등)">시험 합격 (수능·고시·공채 등)</option><option value="자격증·어학">자격증·어학</option><option value="진학·유학·대학원">진학·유학·대학원</option></select></div>
         <div><label class="f">출생년 (양력)</label><input id="y" type="number" placeholder="1992" min="1900" max="2026"></div>
         <div><label class="f">월</label><input id="m" type="number" placeholder="7" min="1" max="12"></div>
         <div><label class="f">일</label><input id="d" type="number" placeholder="8" min="1" max="31"></div>
@@ -123,12 +121,12 @@
       <div class="ebar" id="ebar"></div>
       <div class="elegend" id="elegend"></div>
       <div class="chips" id="chips"></div>
-      <button class="btn" id="aiBtn" onclick="runInterpretation()">AI 시 험 운 풀 이</button>
+      <button class="btn" id="aiBtn" onclick="runInterpretation()">내 매 력 찾 기 ✦</button>
     </div>
 
     <!-- AI 해석 -->
     <div class="card hidden" id="aiCard">
-      <h2>학업·시험운 리포트</h2>
+      <h2>매력운 리포트</h2>
       <div id="parts"></div>
       <div class="notice">본 풀이는 명리학 이론에 근거한 참고용 해석이며, 중요한 결정은 본인의 판단과 전문가 상담을 병행하시기 바랍니다. 투자 관련 내용은 재물운의 흐름 해석일 뿐 특정 투자 권유가 아닙니다.</div>
     </div>
@@ -279,43 +277,25 @@ function calcSeun(saju){
   return{올해:cur.sajuYear+'년',세운간지:cur.pillars.year.korean,이번달월운:cur.pillars.month.korean,원국과의상호작용:inter.length?inter:['특기할 합충 없음']};
 }
 
-// ---- 테마운세 공용 계산 ----
 function tenGodOf(dsIdx,tIdx){const de=STEM_ELEMENT[dsIdx],te=STEM_ELEMENT[tIdx];let r;if(te===de)r=0;else if(te===(de+1)%5)r=1;else if(te===(de+2)%5)r=2;else if(te===(de+3)%5)r=3;else r=4;return TEN_GODS[r][STEM_YANG[tIdx]===STEM_YANG[dsIdx]?0:1];}
 function relOf(dsIdx,tIdx){const de=STEM_ELEMENT[dsIdx],te=STEM_ELEMENT[tIdx];if(te===de)return '비겁';if(te===(de+1)%5)return '식상';if(te===(de+2)%5)return '재성';if(te===(de+3)%5)return '관성';return '인성';}
-function jdToMD(jd){const ms=(jd-2440587.5)*86400000;const k=new Date(ms+9*3600*1000);return (k.getUTCMonth()+1)+'월 '+k.getUTCDate()+'일';}
 const HONGYEOM={0:6,1:8,2:2,3:7,4:4,5:4,6:10,7:9,8:0,9:8};
-function monthlyBase(){
-  const now=new Date();
-  const cur=calculateSaju({year:now.getFullYear(),month:now.getMonth()+1,day:now.getDate(),hour:12,minute:0,applyLmt:false});
-  const ty=cur.sajuYear; const ys=((ty-4)%10+10)%10; const msStart=[2,4,6,8,0][ys%5];
-  const arr=[];
-  for(let i=0;i<12;i++){const startY=i===11?ty+1:ty; const endY=i>=10?ty+1:ty; const s=(msStart+i)%10,b=JEOL_MB[i];
-    arr.push({i,s,b,순번:i+1,기간:jdToMD(findTerm(startY,JEOL_LON[i]))+' ~ '+jdToMD(findTerm(endY,JEOL_LON[(i+1)%12])),간지:STEMS[s]+BRANCHES[b]});}
-  return {ty,ys:((ty-4)%10+10)%10,yb:((ty-4)%12+12)%12,arr};
-}
 function countRel(saju,rel){let c=0;for(const[k,p]of Object.entries(saju.pillars)){if(!p)continue;if(k!=='day'&&relOf(saju.pillars.day.si,p.si)===rel)c++;const bm=HIDDEN_STEMS[p.bi][HIDDEN_STEMS[p.bi].length-1];if(relOf(saju.pillars.day.si,bm)===rel)c++;}return c;}
-
-function calcStudy(saju){
-  const ds=saju.pillars.day.si, db=saju.pillars.day.bi;
-  const mb=monthlyBase(); const months=[];
-  for(const m of mb.arr){
-    let score=0; const sig=[]; const warn=[];
-    const st=relOf(ds,m.s); const bm=HIDDEN_STEMS[m.b][HIDDEN_STEMS[m.b].length-1];
-    if(st==='인성'){const j=STEM_YANG[m.s]!==STEM_YANG[ds];score+=2;sig.push((j?'정인':'편인')+' 투출(합격 문서·흡수력의 기운)');}
-    if(MUNCHANG[ds]===m.b){score+=2;sig.push('문창귀인 발동(집중력·시험운 상승)');}
-    if(relOf(ds,bm)==='인성'){score+=1;sig.push('월지에 공부의 기운');}
-    if(st==='식상'){score+=1;sig.push('식상 투출(표현력 - 논술·면접·실기에 유리)');}
-    if(st==='재성')warn.push('재성 투출(재극인 - 딴생각·현실 걱정이 공부를 흔드는 달)');
-    if((m.b+6)%12===db)warn.push('일지충(생활 리듬이 흔들리기 쉬운 달 - 루틴 사수)');
-    months.push({순번:m.순번,기간:m.기간,간지:m.간지,학업점수:score,신호:sig.length?sig:['두드러진 변동 없음 - 꾸준히 쌓기 좋은 평온한 달'],주의:warn});
-  }
-  const top3=[...months].filter(x=>x.학업점수>0).sort((a,b)=>b.학업점수-a.학업점수).slice(0,3).map(x=>({순번:x.순번,기간:x.기간,간지:x.간지,점수:x.학업점수}));
-  return{원국구조:{인성개수:countRel(saju,'인성'),식상개수:countRel(saju,'식상'),관성개수:countRel(saju,'관성'),
-      문창귀인:Object.entries(saju.pillars).filter(([k,p])=>p&&MUNCHANG[ds]===p.bi).map(([k])=>PN[k]).join(',')||'원국에 없음(운에서 발동하는 시기가 중요)',
-      해석힌트:'인성=흡수·암기력, 식상=표현·응용력, 관성=규율·꾸준함'},
-    올해:mb.ty+'년 '+STEMS[mb.ys]+BRANCHES[mb.yb],
-    월별학업신호:months,학업유력시기TOP3:top3,
-    참고:'점수는 인성투출+2, 문창발동+2, 월지인성/식상투출+1의 합'};
+function tenCounts(saju){return{비겁:countRel(saju,'비겁'),식상:countRel(saju,'식상'),재성:countRel(saju,'재성'),관성:countRel(saju,'관성'),인성:countRel(saju,'인성')};}
+function calcCharm(saju){
+  const ds=saju.pillars.day.si, db=saju.pillars.day.bi, yb=saju.pillars.year.bi;
+  const dohwaB=[...new Set([DOHWA[SG[yb]],DOHWA[SG[db]]])];
+  const dohwaLoc=Object.entries(saju.pillars).filter(([k,p])=>p&&dohwaB.includes(p.bi)).map(([k])=>PN[k]);
+  const hongLoc=Object.entries(saju.pillars).filter(([k,p])=>p&&p.bi===HONGYEOM[ds]).map(([k])=>PN[k]);
+  const cnt=Object.entries(saju.elementCount).sort((a,b)=>b[1]-a[1]);
+  return{매력의재료:{도화:dohwaLoc.length?dohwaLoc.join(',')+'에 있음(사람을 끌어당기는 인기의 별)':'원국에 없음(운에서 발동할 때 빛남)',
+      홍염:hongLoc.length?hongLoc.join(',')+'에 있음(은은하게 스며드는 끌림의 별)':'원국에 없음',
+      십성분포:tenCounts(saju),
+      해석힌트:'식상=표현·재치·웃게 하는 매력, 재성=센스·현실감각·다정한 챙김, 관성=단정함·신뢰감, 인성=지적·차분한 깊이, 비겁=당당함·자기확신'},
+    겉과속:{사회에서보이는나:'년간 '+tenGodOf(ds,saju.pillars.year.si)+' · 월간 '+tenGodOf(ds,saju.pillars.month.si)+' (년·월주 = 처음 만나는 사람들에게 보이는 면)',
+      가까워지면보이는나:'일지 '+saju.pillars.day.branchTG+(saju.pillars.hour?' · 시간 '+saju.pillars.hour.stemTG:'')+' (일·시주 = 가까운 사람만 아는 면)'},
+    분위기의색:'가장 강한 오행 '+cnt[0][0]+' (목=생기·싱그러움, 화=화사함·에너지, 토=푸근함·안정감, 금=세련됨·단단함, 수=신비로움·유연함)',
+    참고:'신살 목록과 사주팔자 원문은 상위 데이터 참조'};
 }
 
 // ============================================================
@@ -340,12 +320,12 @@ function runCalc(){
   const lmt=unk?false:document.getElementById('lmt').checked;
   const uname=(document.getElementById('uname').value||'').trim()||'회원';
   if(!y||!m||!d||(!unk&&document.getElementById('hh').value==='')){alert('생년월일과 시간을 입력해주세요. 시간을 모르면 체크박스를 선택하세요.');return;}
-  BIRTH={year:y,month:m,day:d,hour:hh,minute:mm,applyLmt:lmt,gender,name:uname,timeUnknown:unk,tctx:document.getElementById('tctx').value};
+  BIRTH={year:y,month:m,day:d,hour:hh,minute:mm,applyLmt:lmt,gender,name:uname,timeUnknown:unk};
   const saju=calculateSaju(BIRTH);
   ANALYSIS={사주원국:{},일간:saju.dayMaster,오행분포:saju.elementCount,절기:saju.jeol,보정시각:saju.correctedTime,야자시:saju.yaja,
     합충형파해:findRelations(saju),신살:findSinsal(saju),신강신약:assessStrength(saju),
     대운:calcDaeun(saju,gender,BIRTH),세운:calcSeun(saju),성별:gender==='M'?'남성':'여성',
-    학업시험운:calcStudy(saju)};
+    매력운:calcCharm(saju)};
   for(const[k,p]of Object.entries(saju.pillars)){
     ANALYSIS.사주원국[PN[k]]=p?{간지:p.korean,한자:p.hanja,천간오행:p.stemEl,지지오행:p.branchEl,천간십성:p.stemTG,지지본기십성:p.branchTG,지장간:p.hidden.join(',')}:'시간 미상';}
   renderMyeongsik(saju);
@@ -377,22 +357,24 @@ function renderMyeongsik(saju){
 }
 
 // ---- 4단계 AI 해석 ----
-const SYSTEM_PROMPT=`당신은 30년 경력의 명리학 고수인데, 말투는 수험생과 배우는 사람을 응원하는 동네 최고 실력자입니다. 지금 {NAME}님의 학업·시험운을 풀이합니다.
-[원칙] 개념 강의 금지(용어는 괄호 한 줄만). 아무 사주에나 붙는 문장 금지. 반드시 "{NAME}님" 직접 호칭. 자연스러운 구어체 존댓말. 근거 없는 덕담 금지.
-[특별 규칙] 1. 합격·불합격을 단정하거나 보장하는 표현 절대 금지 - "합격 기운이 들어온다/문서운이 열린다"의 언어로. 운은 노력을 대신하지 못하고 실어주는 바람이라는 관점 유지. 2. 데이터의 "학업 목표"에 맞춰 초점을 맞추세요(시험/자격증·어학/진학·유학). 3. 엔진 계산 데이터 재계산 금지, 기간 날짜 그대로. 4. 마크다운 없이, 소제목은 【】, 완결된 문장으로. 5. 인사말·재소개 없이 바로 본론, 섹션 간 중복 최소화.
-[사주별 답변 철학] 흐름이 아쉽다는 판정으로 끝내지 마세요 - 반드시 "그래서 어떻게 극복하는지"를 함께 주세요. 흐름이 좋다는 칭찬으로 끝내지 마세요 - "그래서 어떻게 극대화하는지"를 함께 주세요. 모든 판정에는 다음 행동이 따라옵니다.`;
+const SYSTEM_PROMPT=`당신은 30년 경력의 명리학 고수 "사주별"입니다. 지금 {NAME}님의 매력운을 풀이합니다 - 이 리포트의 목적은 미래 예측이 아니라 {NAME}님이 자기 매력을 발견하고 기분 좋게 자신을 알게 되는 것입니다. 자연스러운 구어체 존댓말, "{NAME}님" 직접 호칭, 개념 강의 금지(괄호 한 줄만), 아무 사주에나 붙는 문장 금지, 마크다운 없이 자연스러운 문단, 소제목은 【】.
+[매력운 규칙]
+1. 이 사주의 글자에서만 나오는 구체적 매력을 말하세요 - "당신은 매력적이에요" 같은 빈말 금지.
+2. 긍정 중심이되 거짓 없이: 매력이 과할 때 생기는 그림자(예: 도화가 강하면 오해받는 순간)도 숨기지 말고, 반드시 그걸 다루는 법과 한 세트로.
+3. 외모 평가·비교 금지. 매력은 기질과 분위기의 이야기로.
+4. 엔진 데이터 재계산 금지. 인사말 없이 바로 본론, 섹션 간 중복 최소화. 읽는 사람이 캡처해서 남기고 싶어질 만큼 구체적이고 기분 좋게.
+[사주별 답변 철학] 아쉬운 지점은 반드시 "그래서 어떻게 다루는지"와 함께, 좋은 지점은 "그래서 어떻게 살리는지"와 함께.`;
 
 const PARTS=[
-  {title:'공부하는 사람으로서의 나',prompt:`[PART 1] 첫 문장부터 바로 {NAME}님 얘기로. 일간의 기질과 데이터의 "원국구조"(인성·식상·관성 개수, 문창귀인 위치)를 근거로 {NAME}님의 공부 스타일을 깊게: 암기형인지 이해·응용형인지, 몰입이 터지는 조건, 슬럼프가 오는 패턴, 시험장에서 강한지 실전에서 떠는지까지.`},
-  {title:'이 목표, 사주와 맞는 길인가',prompt:`[PART 2] 데이터의 학업 목표와 신강신약·용신후보를 근거로, 이 목표가 {NAME}님 사주의 기운과 어떻게 맞물리는지: 유리하게 작용하는 글자와 보완할 지점, 그리고 올해 세운이 이 도전에 실어주는 바람인지 맞바람인지. 합격 여부 단정 없이, 준비 전략의 관점으로.`},
-  {title:'월별 학업운 상세 · 전반 여섯 달',prompt:`[PART 3] 데이터의 "월별학업신호" 순번 1~6번 달을 다루세요. 오직 이 여섯 달만 다루고 범위 밖의 달은 절대 다루지 마세요(앞 파트에서 빠진 달이 있어도 여기서 구제하지 말 것 - 시스템이 따로 처리합니다). 각 소제목의 기간과 간지는 반드시 데이터에서 같은 달의 것을 그대로 짝지어 쓰세요 - 기간 따로 간지 따로 조합 금지. 월별 풀이를 시작하기 전에 딱 한 문장으로, 사주의 한 달은 달력이 아니라 절기 기준이라 매달 4~8일경(절입일)에 시작되고 그래서 기간이 7일~다음달 7일처럼 표기된다는 점을 자연스럽게 안내해주세요. 각 달을 【기간 · 간지】 소제목(데이터의 날짜 그대로)으로 하나씩 빠짐없이 다루세요. 신호가 강한 달(점수 2 이상)은 5~8문장으로 풍성하게 - 어떤 글자와 신호가 겹치는지, 실제 생활에서 어떤 장면으로 나타날 수 있는지, 이 달을 어떻게 활용할지까지. 신호가 약하거나 "주의"가 붙은 달은 3~5문장 - 왜 그런지 이 사주의 글자로 설명하고, 반드시 보완법·대응 전략을 1가지 이상(용신 오행을 살리는 방법 등 이 사주 근거로) 함께 주세요. 나쁘다고만 하고 끝내는 것 금지. 모든 달에서 해석의 근거(어떤 십성·합충·신살 때문인지)를 데이터의 신호·주의 항목에서 가져와 나열이 아니라 이야기로 풀어 녹이세요. 그리고 반드시 지킬 것: 점수 숫자나 "신호 없음" 같은 데이터 원문 표현을 리포트에 절대 그대로 노출하지 마세요 - 점수는 서술 비중을 정하는 내부 참고용입니다. 신호가 조용한 달은 나쁜 달이 아니라 평온한 달이니 "기반을 다지는 달", "쌓아두는 달"처럼 그 달의 쓸모로 풀어주세요. 보완·강화 행동은 현실적으로: 용신 오행을 일상 행동으로 번역하거나(예: 수 기운이 필요하면 수영·산책·계획과 기록 정리, 화 기운이면 사람 만나기·운동·발표 연습, 목 기운이면 새 배움 시작·식물 가꾸기, 금 기운이면 정리정돈·마무리 짓기, 토 기운이면 루틴 만들기·저축), 그 달 십성의 기운을 살리는 실용 행동(인성 달엔 공부·자격증, 식상 달엔 결과물 만들기·표현하기, 재성 달엔 가계와 협상 점검)으로 제안하세요. 부적·소금·방위 이동 같은 미신성 지침과 "긍정적으로 생각하세요"류 빈 덕담은 금지. 각 달의 마지막 문장은 그 달을 잘 보내는 방법이나 그 달의 쓸모로 맺어서, 어떤 달을 읽어도 손에 잡히는 것 하나는 남게 하세요. 학업 관점으로: 좋은 달은 진도·암기·시험·면접 중 무엇에 기운이 실리는지까지, {NAME}님의 학업 목표에 맞게. 재극인 주의 달은 집중이 흔들리는 이유와 루틴 사수법을 구체적으로.`},
-  {title:'월별 학업운 상세 · 후반 여섯 달',prompt:`[PART 4] 데이터의 "월별학업신호" 순번 7~12번 달을 같은 방식으로 다루세요. 오직 이 여섯 달만 다루고 범위 밖의 달은 절대 다루지 마세요(앞 파트에서 빠진 달이 있어도 여기서 구제하지 말 것 - 시스템이 따로 처리합니다). 각 소제목의 기간과 간지는 반드시 데이터에서 같은 달의 것을 그대로 짝지어 쓰세요 - 기간 따로 간지 따로 조합 금지. 각 달을 【기간 · 간지】 소제목(데이터의 날짜 그대로)으로 하나씩 빠짐없이 다루세요. 신호가 강한 달(점수 2 이상)은 5~8문장으로 풍성하게 - 어떤 글자와 신호가 겹치는지, 실제 생활에서 어떤 장면으로 나타날 수 있는지, 이 달을 어떻게 활용할지까지. 신호가 약하거나 "주의"가 붙은 달은 3~5문장 - 왜 그런지 이 사주의 글자로 설명하고, 반드시 보완법·대응 전략을 1가지 이상(용신 오행을 살리는 방법 등 이 사주 근거로) 함께 주세요. 나쁘다고만 하고 끝내는 것 금지. 모든 달에서 해석의 근거(어떤 십성·합충·신살 때문인지)를 데이터의 신호·주의 항목에서 가져와 나열이 아니라 이야기로 풀어 녹이세요. 그리고 반드시 지킬 것: 점수 숫자나 "신호 없음" 같은 데이터 원문 표현을 리포트에 절대 그대로 노출하지 마세요 - 점수는 서술 비중을 정하는 내부 참고용입니다. 신호가 조용한 달은 나쁜 달이 아니라 평온한 달이니 "기반을 다지는 달", "쌓아두는 달"처럼 그 달의 쓸모로 풀어주세요. 보완·강화 행동은 현실적으로: 용신 오행을 일상 행동으로 번역하거나(예: 수 기운이 필요하면 수영·산책·계획과 기록 정리, 화 기운이면 사람 만나기·운동·발표 연습, 목 기운이면 새 배움 시작·식물 가꾸기, 금 기운이면 정리정돈·마무리 짓기, 토 기운이면 루틴 만들기·저축), 그 달 십성의 기운을 살리는 실용 행동(인성 달엔 공부·자격증, 식상 달엔 결과물 만들기·표현하기, 재성 달엔 가계와 협상 점검)으로 제안하세요. 부적·소금·방위 이동 같은 미신성 지침과 "긍정적으로 생각하세요"류 빈 덕담은 금지. 각 달의 마지막 문장은 그 달을 잘 보내는 방법이나 그 달의 쓸모로 맺어서, 어떤 달을 읽어도 손에 잡히는 것 하나는 남게 하세요. 마지막에 "학업유력시기TOP3"를 한 해의 공부 지도로 한 문단 정리해주세요.`},
-  {title:'합격 기운을 내 편으로 만드는 법',prompt:`[PART 5] {NAME}님 사주에 맞는 공부 실천법 3가지 - 뻔한 "열심히 하세요" 말고 이 사주라서 필요한 것으로(용신 오행을 살리는 공부 환경·시간대·방법, 문창/인성을 깨우는 루틴 등). 마지막은 {NAME}님에게 건네는 진심 어린 응원 한 문장으로 완결.`}
+  {title:'첫인상 · 사람들이 처음 보는 나',prompt:`[PART 1] 첫 문장부터 바로 {NAME}님 얘기로. 데이터의 "겉과속-사회에서보이는나"(년·월주 십성)와 "분위기의색"(최다 오행), 일간의 기운을 근거로: 처음 만난 사람들 눈에 {NAME}님이 어떤 분위기로 보이는지, 첫 만남에서 무의식적으로 풍기는 인상, 사람들이 {NAME}님을 처음 보고 자주 하는 오해나 짐작까지 - 구체적인 장면으로.`},
+  {title:'알수록 보이는 진짜 매력',prompt:`[PART 2] 데이터의 "겉과속-가까워지면보이는나"와 "매력의재료"(도화·홍염 위치, 십성분포)를 근거로: 가까워질수록 드러나는 {NAME}님의 진짜 매력을 깊게 - 첫인상과 어떻게 다른지(반전 매력이 있다면 그 지점), 도화·홍염이 있다면 어떤 식의 끌림으로 나타나는지, 십성 구조가 만드는 {NAME}님만의 매력 유형까지. 본인은 당연하게 여겨서 몰랐을 포인트를 콕 집어주세요.`},
+  {title:'내 매력이 가장 빛나는 순간',prompt:`[PART 3] 이 사주의 글자를 근거로: {NAME}님의 매력이 가장 빛나는 상황과 자리(예: 소수와 깊은 대화 vs 여럿 속 분위기 메이커, 일하는 모습 vs 편안한 자리), 어떤 유형의 사람들이 {NAME}님의 매력에 특히 끌리는지, 그리고 매력이 과할 때 생길 수 있는 그림자 한 가지와 그걸 매력으로 되돌리는 법까지.`},
+  {title:'매력을 200% 쓰는 법',prompt:`[PART 4] {NAME}님 사주라서 통하는 매력 활용법 3가지 - 스타일·무드(용신 오행을 어울리는 색·분위기로 가볍게), 관계에서의 행동, 자기표현 방식으로 구체적으로. 그리고 마지막 줄은 지금까지의 풀이를 압축한 {NAME}님만의 매력 캐치프레이즈 한 문장으로 - 【나의 매력 한 줄】 소제목 아래, 캡처해서 간직하고 싶어질 문장으로 완결.`},
 ];
 
 // ---- 자체 서버 경유 AI 호출 (API 키는 서버에만 존재) ----
 const ACCESS_CODE=new URLSearchParams(location.search).get('code')||'';
-const PRODUCT_ID='study';
+const PRODUCT_ID='charm';
 
 // 동시 요청 관리: 평소 3개 동시, 한도 초과 감지 시 자동으로 1개씩 순차 전환
 let MAX_CONC=3, running=0; const waiters=[];
@@ -454,104 +436,37 @@ async function callPart(sys,messages){
   return full;
 }
 
-// ---- 월별 완결성 검사: 빠진 달을 감지해 자동 보충 ----
-function findMonthlyArr(obj){
-  for(const v of Object.values(obj)){
-    if(Array.isArray(v)&&v.length===12&&v[0]&&v[0].기간&&v[0].간지)return v;
-    if(v&&typeof v==='object'&&!Array.isArray(v)){const r=findMonthlyArr(v);if(r)return r;}
-  }
-  return null;
-}
-function requiredFor(prompt){
-  const mons=findMonthlyArr(ANALYSIS); if(!mons)return null;
-  if(prompt.includes('1~6번'))return mons.slice(0,6);
-  if(prompt.includes('7~12번'))return mons.slice(6);
-  return null;
-}
-function _normT(t){return String(t).replace(/\s+/g,'');}
-// 생성된 월별 텍스트 정리: 범위 밖 달 블록 제거 + 기간이 틀린 소제목 교정
-function sanitizeMonthly(text,required,allMonths){
-  const re=/【[^】]*】/g; let mm; const marks=[];
-  while((mm=re.exec(text))){marks.push({h:mm[0],start:mm.index});}
-  if(!marks.length)return text;
-  const intro=text.slice(0,marks[0].start);
-  const reqSet=new Set(required.map(x=>x.간지));
-  const out=[];
-  for(let i=0;i<marks.length;i++){
-    const end=i+1<marks.length?marks[i+1].start:text.length;
-    const header=marks[i].h;
-    const body=text.slice(marks[i].start+header.length,end);
-    const hasDate=/\d+월\s*\d+일/.test(header);
-    const owner=allMonths.find(x=>header.includes(x.간지));
-    if(!owner||!hasDate){out.push(header+body);continue;} // 총정리 등 일반 소제목은 유지
-    if(!reqSet.has(owner.간지))continue;                    // 이 파트 범위 밖의 달 → 블록 제거
-    // 간지는 맞는데 기간이 틀린 소제목 → 엔진 데이터의 진짜 기간으로 교정
-    const fixed=_normT(header).includes(_normT(owner.기간))?header:('【'+owner.기간+' · '+owner.간지+'】');
-    out.push(fixed+body);
-  }
-  // 달 블록은 순번대로 정렬, 총정리 등 일반 블록은 맨 뒤 순서 유지
-  const monthsOut=[], others=[];
-  for(const seg of out){
-    const hd=(seg.match(/【[^】]*】/)||[''])[0];
-    const ow=allMonths.find(x=>hd.includes(x.간지)&&/\d+월\s*\d+일/.test(hd));
-    if(ow&&reqSet.has(ow.간지))monthsOut.push({n:ow.순번,seg});else others.push(seg);
-  }
-  monthsOut.sort((a,b)=>a.n-b.n);
-  return intro+monthsOut.map(x=>x.seg).join('')+others.join('');
-}
-async function callPartComplete(sys,messages,required){
-  let full=await callPart(sys,messages);
-  if(required){
-    const allMonths=findMonthlyArr(ANALYSIS)||required;
-    for(let r=0;r<3;r++){
-      full=sanitizeMonthly(full,required,allMonths);
-      // 존재 판정: 소제목에 해당 달의 간지가 있어야 인정 (본문 스침 언급은 무시)
-      const headers=(full.match(/【[^】]*】/g)||[]).join(' ');
-      const missing=required.filter(x=>!headers.includes(x.간지));
-      if(!missing.length)break;
-      const ask='방금 답변에서 다음 달이 빠졌습니다: '+missing.map(x=>'【'+x.기간+' · '+x.간지+'】').join(', ')+'. 이미 작성한 달은 반복하지 말고, 빠진 달만 같은 형식·같은 상세함으로 작성하세요. 소제목의 기간과 간지는 위에 적힌 그대로 짝지어 쓰세요.';
-      try{
-        const add=await callPart(sys,[...messages,{role:'assistant',content:full},{role:'user',content:ask}]);
-        full+='\n\n'+add;
-      }catch(e){break;}
-    }
-  }
-  return full;
-}
-
-
 async function runInterpretation(){
   document.getElementById('aiBtn').disabled=true;
   document.getElementById('aiCard').classList.remove('hidden');
   const partsBox=document.getElementById('parts');
-  // 이용권 사전 확인 (유료 오픈된 상품이면 여기서 사용 1회 차감)
   try{
     const lic=(document.getElementById('license')?document.getElementById('license').value.trim():'');
     const pre=await fetch('/api/interpret',{method:'POST',headers:{'Content-Type':'application/json','x-access-code':ACCESS_CODE,'x-product':PRODUCT_ID,'x-license':lic},body:JSON.stringify({mode:'unlock',messages:[{role:'user',content:'unlock'}]})});
     const pd=await pre.json();
     if(!pre.ok){
-      partsBox.innerHTML='<div class="err">'+(pd.error||'이용권 확인에 실패했어요.')+(pd.buyUrl?' <a href="'+pd.buyUrl+'" target="_blank" style="color:var(--earth)">👉 이용권 구매하기</a>':'')+'</div>';
+      partsBox.innerHTML='<div class="err">'+(pd.error||'이용권 확인 실패')+(pd.buyUrl?' <a href="'+pd.buyUrl+'" target="_blank" style="color:var(--earth)">👉 이용권 구매하기</a>':'')+'</div>';
       document.getElementById('aiBtn').disabled=false;
       return;
     }
-  }catch(e){/* 네트워크 오류 시 본 호출에서 다시 검증됨 */}
+  }catch(e){}
   const NAME=BIRTH.name||'회원';
   const sys=SYSTEM_PROMPT.replaceAll('{NAME}',NAME)
     +`\n6. 이 답변은 하나의 리포트를 구성하는 여러 섹션 중 하나입니다. 인사말이나 사주 전체 재소개 없이 해당 섹션 주제로 바로 들어가고, 다른 섹션에서 다룰 주제와의 중복은 최소화하세요.`;
   const now=new Date();
-  const dataMsg=`[정밀 만세력 엔진 계산 데이터]\n이름: ${NAME}님\n현재 날짜: ${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일\n출생: ${BIRTH.year}년 ${BIRTH.month}월 ${BIRTH.day}일 ${BIRTH.timeUnknown?'시간 미상 (편의상 00:00 자시 기준으로 산출됨)':BIRTH.hour+'시 '+BIRTH.minute+'분'} / ${ANALYSIS.성별} / 학업 목표: ${BIRTH.tctx} / 만 ${now.getFullYear()-BIRTH.year}세 전후${BIRTH.timeUnknown?'\n※ 주의: 출생 시간을 몰라 00:00으로 가정해 시주를 산출했습니다. 시주에 기대는 해석은 하지 말거나 "시간이 정확하다면"이라는 전제를 달아 가볍게만 언급하고, 년·월·일주 중심으로 풀이하세요.':''}\n\n${JSON.stringify(ANALYSIS,null,1)}`;
+  const dataMsg=`[정밀 만세력 엔진 계산 데이터]\n이름: ${NAME}님\n현재 날짜: ${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일\n출생: ${BIRTH.year}년 ${BIRTH.month}월 ${BIRTH.day}일 ${BIRTH.timeUnknown?'시간 미상 (편의상 00:00 자시 기준으로 산출됨)':BIRTH.hour+'시 '+BIRTH.minute+'분'} / ${ANALYSIS.성별} / 만 ${now.getFullYear()-BIRTH.year}세 전후${BIRTH.timeUnknown?'\n※ 주의: 출생 시간을 몰라 00:00으로 가정해 시주를 산출했습니다. 시주에 기대는 해석은 하지 말거나 "시간이 정확하다면"이라는 전제를 달아 가볍게만 언급하고, 년·월·일주 중심으로 풀이하세요.':''}\n\n${JSON.stringify(ANALYSIS,null,1)}`;
 
   // ---- 대기 화면 ----
   partsBox.innerHTML=`<div class="progress-list">${PARTS.map((p,i)=>
     `<div class="prog-item working" id="prog${i}"><span class="st"></span><span>PART ${i+1} · ${p.title}</span></div>`).join('')}
-    </div><div class="prog-hint">${NAME}님의 공부 글자들을 하나하나 짚고 있어요.<br>리포트가 완성되면 한 번에 보여드릴게요. (약 1~2분)</div>`;
+    </div><div class="prog-hint">${NAME}님의 매력의 글자들을 하나하나 꺼내보고 있어요.<br>리포트가 완성되면 한 번에 보여드릴게요. (약 1분)</div>`;
   const setDone=(i)=>{const e=document.getElementById('prog'+i);if(e){e.classList.remove('working');e.classList.add('done');}};
 
   const pp=(i)=>PARTS[i].prompt.replaceAll('{NAME}',NAME);
   const mk=(i)=>[{role:'user',content:dataMsg+'\n\n'+pp(i)}];
 
   try{
-    const jobs=PARTS.map((_,i)=>callPartComplete(sys,mk(i),requiredFor(pp(i))).then(t=>{setDone(i);return t;}));
+    const jobs=PARTS.map((_,i)=>callPart(sys,mk(i)).then(t=>{setDone(i);return t;}));
     const texts=await Promise.all(jobs);
     partsBox.innerHTML='';
     texts.forEach((t,i)=>{

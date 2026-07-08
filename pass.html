@@ -110,6 +110,7 @@
         <div><label class="f">시 (0-23)</label><input id="hh" type="number" placeholder="8" min="0" max="23"></div>
         <div><label class="f">분</label><input id="mm" type="number" placeholder="20" min="0" max="59" value="0"></div>
         <div class="full check-row"><input id="unknownTime" type="checkbox" onchange="toggleUnknownTime()"><label for="unknownTime">태어난 시간을 몰라요 (00:00 기준으로 계산)</label></div>
+        <div class="full"><label class="f">이용권 키</label><input id="license" type="text" placeholder="구매 시 이메일로 받은 키 · 무료 오픈 기간엔 비워두세요"></div>
         <div class="full check-row"><input id="lmt" type="checkbox" checked><label for="lmt">진태양시 보정 적용 (한국 출생, -30분)</label></div>
       </div>
       <button class="btn" onclick="runCalc()">내 사주 펼치기 ✦</button>
@@ -389,7 +390,8 @@ const SYSTEM_PROMPT=`당신은 30년 경력의 명리학 고수인데, 말투는
 2. 데이터의 "도전 유형"에 맞춰 관문 구성을 조절하세요(취업·공채는 서류/필기/면접, 시험·고시는 필기 중심, 자격증과 입시는 해당 관문 중심).
 3. 발표를 기다리는 시기는 마음이 가장 흔들리는 시기임을 존중 - 초조함을 다그치지 말고 다루는 법을 함께.
 4. 사주팔자·신강신약·월별 신호와 점수는 엔진이 계산해 제공 - 재계산 금지, 기간 날짜 그대로 사용.
-5. 마크다운 없이 자연스러운 문단, 소제목은 【】, 각 파트는 완결된 문장으로. 인사말·재소개 없이 바로 본론, 섹션 간 중복 최소화.`;
+5. 마크다운 없이 자연스러운 문단, 소제목은 【】, 각 파트는 완결된 문장으로. 인사말·재소개 없이 바로 본론, 섹션 간 중복 최소화.
+[사주별 답변 철학] 흐름이 아쉽다는 판정으로 끝내지 마세요 - 반드시 "그래서 어떻게 극복하는지"를 함께 주세요. 흐름이 좋다는 칭찬으로 끝내지 마세요 - "그래서 어떻게 극대화하는지"를 함께 주세요. 모든 판정에는 다음 행동이 따라옵니다.`;
 
 const PARTS=[
   {title:'합격의 그릇 · 나는 어느 관문에 강한가',prompt:`[PART 1] 첫 문장부터 바로 {NAME}님 얘기로. 데이터의 "관문프로필"(인성·식상·관성 개수, 문창귀인 위치)과 일간의 기질을 근거로 {NAME}님의 합격 그릇을 깊게: 서류·필기형인지 면접·실기형인지, 시험장에서 강한지 긴장하는지, 벼락치기형인지 축적형인지, 발표를 기다릴 때의 패턴까지. 강한 관문은 무기로, 약한 관문은 보완 지점으로 - 도전 유형에 맞는 관문 구성으로.`},
@@ -401,6 +403,7 @@ const PARTS=[
 
 // ---- 자체 서버 경유 AI 호출 (API 키는 서버에만 존재) ----
 const ACCESS_CODE=new URLSearchParams(location.search).get('code')||'';
+const PRODUCT_ID='pass';
 
 // 동시 요청 관리: 평소 3개 동시, 한도 초과 감지 시 자동으로 1개씩 순차 전환
 let MAX_CONC=3, running=0; const waiters=[];
@@ -410,7 +413,7 @@ const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
 
 async function rawFetch(sys,msgs){
   const res=await fetch('/api/interpret',{method:'POST',
-    headers:{'Content-Type':'application/json','x-access-code':ACCESS_CODE},
+    headers:{'Content-Type':'application/json','x-access-code':ACCESS_CODE,'x-product':PRODUCT_ID,'x-license':(document.getElementById('license')?document.getElementById('license').value.trim():'')},
     body:JSON.stringify({system:sys,messages:msgs})});
   return res.json();
 }
@@ -531,6 +534,17 @@ async function runInterpretation(){
   document.getElementById('aiBtn').disabled=true;
   document.getElementById('aiCard').classList.remove('hidden');
   const partsBox=document.getElementById('parts');
+  // 이용권 사전 확인 (유료 오픈된 상품이면 여기서 사용 1회 차감)
+  try{
+    const lic=(document.getElementById('license')?document.getElementById('license').value.trim():'');
+    const pre=await fetch('/api/interpret',{method:'POST',headers:{'Content-Type':'application/json','x-access-code':ACCESS_CODE,'x-product':PRODUCT_ID,'x-license':lic},body:JSON.stringify({mode:'unlock',messages:[{role:'user',content:'unlock'}]})});
+    const pd=await pre.json();
+    if(!pre.ok){
+      partsBox.innerHTML='<div class="err">'+(pd.error||'이용권 확인에 실패했어요.')+(pd.buyUrl?' <a href="'+pd.buyUrl+'" target="_blank" style="color:var(--earth)">👉 이용권 구매하기</a>':'')+'</div>';
+      document.getElementById('aiBtn').disabled=false;
+      return;
+    }
+  }catch(e){/* 네트워크 오류 시 본 호출에서 다시 검증됨 */}
   const NAME=BIRTH.name||'회원';
   const sys=SYSTEM_PROMPT.replaceAll('{NAME}',NAME)
     +`\n6. 이 답변은 하나의 리포트를 구성하는 여러 섹션 중 하나입니다. 인사말이나 사주 전체 재소개 없이 해당 섹션 주제로 바로 들어가고, 다른 섹션에서 다룰 주제와의 중복은 최소화하세요.`;
